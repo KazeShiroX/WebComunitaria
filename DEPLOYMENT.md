@@ -1,6 +1,6 @@
 # 🚀 Guía de Deployment - Web Comunitaria
 
-Guía completa para deployar tu aplicación en Railway (Backend + Frontend).
+Guía completa para deployar tu aplicación en Railway (Backend + Frontend) desde **un solo repositorio**.
 
 ---
 
@@ -9,6 +9,27 @@ Guía completa para deployar tu aplicación en Railway (Backend + Frontend).
 - ✅ Cuenta en [Railway](https://railway.app) (gratis)
 - ✅ Cuenta de GitHub
 - ✅ Git instalado
+
+---
+
+## 📦 PASO 0: SUBIR TODO A GITHUB (UNA SOLA VEZ)
+
+Tu proyecto ya está en un solo repositorio, ¡perfecto! Solo súbelo a GitHub:
+
+```bash
+# Desde la raíz del proyecto (WebComunitaria)
+git init
+git add .
+git commit -m "Web Comunitaria completa - ready for Railway"
+
+# Crear repo en GitHub (hazlo desde github.com)
+# Luego conecta y sube:
+git remote add origin https://github.com/TU_USUARIO/WebComunitaria.git
+git branch -M main
+git push -u origin main
+```
+
+✅ Ahora tienes todo en GitHub: backend/ y frontend en el mismo repo
 
 ---
 
@@ -22,27 +43,20 @@ Guía completa para deployar tu aplicación en Railway (Backend + Frontend).
 4. Railway crea la base de datos automáticamente
 5. Click en el servicio MySQL → **Variables** → Copia `DATABASE_URL`
 
-### Paso 2: Subir Backend a GitHub
-
-```bash
-cd backend
-
-# Inicializar git
-git init
-git add .
-git commit -m "Backend ready"
-
-# Crear repo en GitHub y pushear
-git remote add origin https://github.com/TU_USUARIO/WebComunitaria-Backend.git
-git branch -M main
-git push -u origin main
-```
-
-### Paso 3: Deploy Backend en Railway
+### Paso 2: Deploy Backend
 
 1. En Railway, click **"+ New"** → **"GitHub Repo"**
-2. Autoriza GitHub y selecciona tu repo del backend
-3. Click en el servicio → **Variables** → **"+ Add Variable"**
+2. Autoriza GitHub y selecciona tu repo **WebComunitaria**
+3. ⚠️ **IMPORTANTE**: Railway va a intentar deployar todo el repo
+4. Click en el servicio que se creó → **Settings**
+5. Busca **"Root Directory"** y cambia a: **`backend`**
+6. Click **"Save"**
+
+Railway ahora solo verá la carpeta `backend/` 🎯
+
+### Paso 3: Configurar Variables
+
+Click **Variables** → **"+ Add Variable"**
 
 Agrega estas 3 variables:
 
@@ -52,17 +66,18 @@ SECRET_KEY = cambia-esto-por-algo-super-secreto-123456
 CORS_ORIGINS = http://localhost:4200
 ```
 
-4. Espera 2-3 minutos a que termine el deploy
-5. Click **"Settings"** → **"Generate Domain"**
-6. Copia tu URL (ej: `https://tu-backend.up.railway.app`)
+### Paso 4: Generar Dominio
 
-### Paso 4: Inicializar Base de Datos
+1. Click **"Settings"** → **"Generate Domain"**
+2. Copia tu URL (ej: `https://webcomunitaria-backend.up.railway.app`)
+
+### Paso 5: Inicializar Base de Datos
 
 ```bash
 # Instalar Railway CLI
 npm i -g @railway/cli
 
-# Login y conectar
+# Login y conectar al BACKEND
 railway login
 cd backend
 railway link
@@ -71,7 +86,7 @@ railway link
 railway run python init_railway.py
 ```
 
-### Paso 5: Verificar Backend
+### Paso 6: Verificar Backend
 
 Visita: `https://tu-backend.up.railway.app/api/health`
 
@@ -92,39 +107,32 @@ export const environment = {
 };
 ```
 
-### Paso 2: Subir a GitHub
+Commit y push:
 
 ```bash
-cd ..  # Volver a la raíz del proyecto
-
+# Desde la raíz del proyecto
 git add .
-git commit -m "Frontend ready for Railway"
+git commit -m "Configure production backend URL"
 git push
 ```
 
-Si no tiene git inicializado:
+### Paso 2: Deploy Frontend
 
-```bash
-git init
-git add .
-git commit -m "Frontend ready"
-git remote add origin https://github.com/TU_USUARIO/WebComunitaria-Frontend.git
-git branch -M main
-git push -u origin main
-```
+1. En tu proyecto Railway (el mismo donde está el backend), click **"+ New"**
+2. Selecciona **"GitHub Repo"**
+3. Busca y selecciona tu repo **WebComunitaria** (el mismo)
+4. ⚠️ **IMPORTANTE**: Railway detectará el mismo repo
+5. Click en el nuevo servicio → **Settings**
+6. Busca **"Root Directory"** y cambia a: **`.`** (punto = raíz)
+   - Esto hace que Railway vea el frontend en la raíz del proyecto
+7. Click **"Save"**
 
-### Paso 3: Deploy Frontend en Railway
+Railway ahora deployará el frontend desde la raíz 🎯
 
-1. En tu proyecto Railway, click **"+ New"** → **"GitHub Repo"**
-2. Selecciona el repo del frontend
-3. Railway detecta automáticamente:
-   - `package.json`
-   - `railway.json`
-   - Hace `npm install`
-   - Hace `ng build --configuration production`
-   - Inicia `node server.js`
-4. Click **"Settings"** → **"Generate Domain"**
-5. Copia la URL (ej: `https://webcomunitaria.up.railway.app`)
+### Paso 3: Generar Dominio
+
+1. Click **"Settings"** → **"Generate Domain"**
+2. Copia la URL (ej: `https://webcomunitaria.up.railway.app`)
 
 ### Paso 4: Actualizar CORS
 
@@ -132,10 +140,10 @@ git push -u origin main
 2. Click **Variables** → Edita `CORS_ORIGINS`:
 
 ```env
-CORS_ORIGINS = https://tu-frontend.up.railway.app,http://localhost:4200
+CORS_ORIGINS = https://webcomunitaria.up.railway.app,http://localhost:4200
 ```
 
-3. Railway redesplegará automáticamente ✅
+3. Railway redesplegará el backend automáticamente ✅
 
 ---
 
@@ -166,43 +174,45 @@ https://tu-frontend.up.railway.app
 
 ---
 
-## 📁 ESTRUCTURA RAILWAY
+## 📁 ESTRUCTURA RAILWAY (MONOREPO)
 
 ```
-Tu Proyecto Railway
+Railway Proyecto: WebComunitaria
 │
 ├── 📦 MySQL Database
 │   └── Base de datos webcomunitaria
 │
-├── 🐍 Backend (Python/Flask)
+├── 🐍 Backend Service
+│   ├── Repo: WebComunitaria
+│   ├── Root Directory: backend/
 │   ├── URL: tu-backend.up.railway.app
 │   └── Variables: DATABASE_URL, SECRET_KEY, CORS_ORIGINS
 │
-└── 🎨 Frontend (Angular/Express)
+└── 🎨 Frontend Service
+    ├── Repo: WebComunitaria (mismo repo!)
+    ├── Root Directory: . (raíz)
     ├── URL: tu-frontend.up.railway.app
     └── Conecta con: tu-backend.up.railway.app/api
 ```
+
+**Clave**: Mismo repo, diferente "Root Directory" para cada servicio ✅
 
 ---
 
 ## 🔄 ACTUALIZAR TU APP
 
-### Backend
-```bash
-cd backend
-git add .
-git commit -m "Update backend"
-git push
-```
-✅ Railway auto-redeploy
+Como todo está en un solo repo:
 
-### Frontend
 ```bash
+# Haz tus cambios en backend/ o en el frontend
 git add .
-git commit -m "Update frontend"
+git commit -m "Update: descripción de cambios"
 git push
 ```
-✅ Railway auto-redeploy
+
+✅ Railway auto-redeploy de **ambos servicios** (backend y frontend)
+
+**Tip**: Si solo cambiaste el backend, Railway solo redesplegará el backend. Lo mismo para el frontend.
 
 ---
 
