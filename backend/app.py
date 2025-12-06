@@ -9,7 +9,7 @@ import os
 
 def create_app():
     """Factory function para crear la aplicación Flask"""
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='public', static_url_path='')
     app.config.from_object(Config)
     
     # Configuración para uploads
@@ -29,23 +29,36 @@ def create_app():
     def uploaded_file(filename):
         return send_from_directory('uploads', filename)
     
-    # Ruta de prueba
-    @app.route('/')
-    def index():
-        return {'message': 'API Web Comunitaria - Backend funcionando correctamente'}, 200
-    
+    # Health check para Railway
     @app.route('/api/health')
     def health():
         return {'status': 'healthy'}, 200
+    
+    # Servir el frontend de Angular
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_frontend(path):
+        # Si es una ruta de API, no hacer nada (ya está manejado por blueprints)
+        if path.startswith('api/'):
+            return {'error': 'Not found'}, 404
+        
+        # Intentar servir el archivo estático
+        if path and os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        
+        # Para cualquier otra ruta, servir index.html (Angular routing)
+        return send_from_directory(app.static_folder, 'index.html')
     
     # Crear tablas y carpeta de uploads si no existen
     with app.app_context():
         db.create_all()
         os.makedirs('uploads', exist_ok=True)
+        os.makedirs('public', exist_ok=True)
     
     return app
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host='0.0.0.0', port=Config.PORT, debug=True)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port, debug=Config.DEBUG if hasattr(Config, 'DEBUG') else False)
 

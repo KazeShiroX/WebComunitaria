@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs_22", "python311", "gcc"]
+
+[phases.install]
+cmds = ["npm install", "pip install -r backend/requirements.txt"]
+
+[phases.build]
+cmds = ["npm run build", "mkdir -p backend/public", "cp -r dist/webcomunitaria/browser/* backend/public/"]
+
+[start]
+cmd = "cd backend && python app.py"

@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm run build:front && npm install && npm run build:back"
+
+[start]
+startCommand = "node backend/server.js"

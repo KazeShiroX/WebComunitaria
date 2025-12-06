@@ -3,11 +3,17 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "node backend/server.js",
+    "build:front": "rm -rf backend/public && ng build --configuration production && mkdir -p backend/public && cp -r dist/webcomunitaria/* backend/public"
+,
+    "build:back": "cd backend && npm install",
     "build": "ng build",
     "build:railway": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "echo Build Angular...; if (Test-Path backend/public) { Remove-Item -Recurse -Force backend/public }; ng build --configuration production; New-Item -ItemType Directory -Force -Path backend/public; Copy-Item -Recurse dist/webcomunitaria/* backend/public; echo Instalando dependencias Python...; pip install -r backend/requirements.txt; echo Iniciando backend Python...; python backend/app.py"
+
+
   },
   "prettier": {
     "printWidth": 100,
