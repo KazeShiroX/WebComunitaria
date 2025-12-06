@@ -1,8 +1,14 @@
+# Forzar solo Python, ignorar Node.js
+providers = ["python"]
+
 [phases.setup]
 nixPkgs = ["python311", "gcc"]
 
 [phases.install]
 cmds = ["cd backend && pip install -r requirements.txt"]
+
+[phases.build]
+cmds = ["echo 'Frontend already built'"]
 
 [start]
 cmd = "cd backend && python app.py"
