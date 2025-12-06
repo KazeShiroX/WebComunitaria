@@ -1,0 +1,76 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>{{ isLoginMode() ? 'Iniciar Sesión' : 'Registrarse' }}</h1>
+      <p>{{ isLoginMode() ? 'Accede a tu cuenta de administrador' : 'Crea una cuenta de administrador' }}</p>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        {{ error() }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      @if (!isLoginMode()) {
+        <div class="form-group">
+          <label for="nombre">Nombre completo</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [ngModel]="nombre()"
+            (ngModelChange)="nombre.set($event)"
+            name="nombre"
+            placeholder="Tu nombre"
+            required
+          />
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="email"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loading()">
+        {{ loading() ? 'Cargando...' : (isLoginMode() ? 'Iniciar Sesión' : 'Registrarse') }}
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>
+        {{ isLoginMode() ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
+        <button type="button" class="toggle-btn" (click)="toggleMode()">
+          {{ isLoginMode() ? 'Regístrate' : 'Inicia sesión' }}
+        </button>
+      </p>
+    </div>
+
+    <div class="demo-credentials">
+      <p><strong>Credenciales de prueba:</strong></p>
+      <p>Email: admin&#64;rios.com</p>
+      <p>Contraseña: admin123</p>
+    </div>
+  </div>
+</div>

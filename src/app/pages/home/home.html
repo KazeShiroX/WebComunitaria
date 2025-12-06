@@ -1,1 +1,79 @@
-<p>home works!</p>
+<div class="home-container">
+  <section class="hero">
+    <h1>Noticias de Juan José Ríos</h1>
+    <p>Mantente al día con las últimas noticias y acontecimientos de nuestra comunidad.</p>
+  </section>
+
+  <section class="search-section">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        placeholder="Buscar noticias..." 
+        [value]="terminoBusqueda()"
+        (input)="buscar($event)"
+      />
+    </div>
+  </section>
+
+  <section class="categorias">
+    @for (categoria of categorias(); track categoria) {
+      <button 
+        class="categoria-btn"
+        [class.active]="categoriaActiva() === categoria"
+        (click)="filtrarPorCategoria(categoria)"
+      >
+        {{ categoria }}
+      </button>
+    }
+  </section>
+
+  <section class="noticias-grid">
+    @for (noticia of noticiasPaginadas().items; track noticia.id) {
+      <article class="noticia-card">
+        <img [src]="noticia.imagen" [alt]="noticia.titulo" class="noticia-imagen" />
+        <div class="noticia-content">
+          <span class="noticia-categoria" [style.color]="getCategoriaColor(noticia.categoria)">
+            {{ noticia.categoria }}
+          </span>
+          <h3 class="noticia-titulo">{{ noticia.titulo }}</h3>
+          <p class="noticia-descripcion">{{ noticia.descripcion }}</p>
+        </div>
+      </article>
+    }
+  </section>
+
+  @if (noticiasPaginadas().totalPaginas > 1) {
+    <section class="paginacion">
+      <button 
+        class="pag-btn" 
+        [disabled]="paginaActual() === 1"
+        (click)="irAPagina(paginaActual() - 1)"
+      >
+        ‹
+      </button>
+      
+      @for (pagina of getPaginas(); track pagina) {
+        @if (pagina === '...') {
+          <span class="pag-ellipsis">...</span>
+        } @else {
+          <button 
+            class="pag-btn"
+            [class.active]="paginaActual() === pagina"
+            (click)="irAPagina(+pagina)"
+          >
+            {{ pagina }}
+          </button>
+        }
+      }
+      
+      <button 
+        class="pag-btn"
+        [disabled]="paginaActual() === noticiasPaginadas().totalPaginas"
+        (click)="irAPagina(paginaActual() + 1)"
+      >
+        ›
+      </button>
+    </section>
+  }
+</div>

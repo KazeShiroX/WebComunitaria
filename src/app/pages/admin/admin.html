@@ -1,0 +1,154 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h1>Panel de Administración</h1>
+      <p>Gestiona las noticias de la comunidad</p>
+    </div>
+    <button class="btn-primary" (click)="openForm()">
+      + Nueva Noticia
+    </button>
+  </div>
+
+  @if (mensaje()) {
+    <div class="mensaje" [class.success]="mensaje()?.tipo === 'success'" [class.error]="mensaje()?.tipo === 'error'">
+      {{ mensaje()?.texto }}
+    </div>
+  }
+
+  <div class="noticias-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Título</th>
+          <th>Categoría</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (noticia of noticias(); track noticia.id) {
+          <tr>
+            <td>
+              <img [src]="noticia.imagen" [alt]="noticia.titulo" class="table-img" />
+            </td>
+            <td>
+              <div class="noticia-info">
+                <span class="noticia-titulo">{{ noticia.titulo }}</span>
+                <span class="noticia-desc">{{ noticia.descripcion }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="categoria-badge" [style.background-color]="getCategoriaColor(noticia.categoria)">
+                {{ noticia.categoria }}
+              </span>
+            </td>
+            <td>{{ noticia.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="acciones">
+                <button class="btn-edit" (click)="openForm(noticia)">✏️</button>
+                <button class="btn-delete" (click)="eliminarNoticia(noticia.id)">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingNoticia() ? 'Editar Noticia' : 'Nueva Noticia' }}</h2>
+        <button class="close-btn" (click)="closeForm()">✕</button>
+      </div>
+      
+      <form (ngSubmit)="guardarNoticia()" class="modal-form">
+        <div class="form-group">
+          <label for="titulo">Título *</label>
+          <input 
+            type="text" 
+            id="titulo" 
+            [ngModel]="titulo()"
+            (ngModelChange)="titulo.set($event)"
+            name="titulo"
+            placeholder="Título de la noticia"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción corta *</label>
+          <textarea 
+            id="descripcion" 
+            [ngModel]="descripcion()"
+            (ngModelChange)="descripcion.set($event)"
+            name="descripcion"
+            placeholder="Breve descripción de la noticia"
+            rows="2"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="contenido">Contenido completo</label>
+          <textarea 
+            id="contenido" 
+            [ngModel]="contenido()"
+            (ngModelChange)="contenido.set($event)"
+            name="contenido"
+            placeholder="Contenido completo de la noticia"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categoria">Categoría *</label>
+            <select 
+              id="categoria" 
+              [ngModel]="categoria()"
+              (ngModelChange)="categoria.set($event)"
+              name="categoria"
+              required
+            >
+              <option value="">Seleccionar...</option>
+              @for (cat of categorias(); track cat) {
+                @if (cat !== 'Todos') {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="imagen">URL de imagen</label>
+          <input 
+            type="url" 
+            id="imagen" 
+            [ngModel]="imagen()"
+            (ngModelChange)="imagen.set($event)"
+            name="imagen"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+        </div>
+
+        @if (imagen()) {
+          <div class="image-preview">
+            <img [src]="imagen()" alt="Preview" />
+          </div>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            {{ editingNoticia() ? 'Actualizar' : 'Crear' }} Noticia
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
