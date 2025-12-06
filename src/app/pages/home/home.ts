@@ -1,22 +1,23 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { NoticiasService } from '../../services/noticias.service';
 import { PaginacionResult, Noticia } from '../../models/noticia.model';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
   private noticiasService = inject(NoticiasService);
-  
+
   categorias = this.noticiasService.getCategorias();
   categoriaActiva = signal<string>('Todos');
   paginaActual = signal<number>(1);
   terminoBusqueda = signal<string>('');
   itemsPorPagina = 4;
-  
+
   noticiasPaginadas = signal<PaginacionResult<Noticia>>({
     items: [],
     totalItems: 0,
@@ -24,8 +25,12 @@ export class Home implements OnInit {
     paginaActual: 1,
     itemsPorPagina: this.itemsPorPagina
   });
-  
+
   loading = signal<boolean>(false);
+
+  // Modal de detalle
+  showModal = signal<boolean>(false);
+  noticiaSeleccionada = signal<Noticia | null>(null);
 
   ngOnInit() {
     this.cargarNoticias();
@@ -36,7 +41,8 @@ export class Home implements OnInit {
     this.noticiasService.getNoticiasPaginadas(
       this.paginaActual(),
       this.itemsPorPagina,
-      this.categoriaActiva()
+      this.categoriaActiva(),
+      this.terminoBusqueda()
     ).subscribe({
       next: (result) => {
         this.noticiasPaginadas.set(result);
@@ -61,10 +67,21 @@ export class Home implements OnInit {
     }
   }
 
+  private searchTimeout: any;
+
   buscar(event: Event) {
     const input = event.target as HTMLInputElement;
     this.terminoBusqueda.set(input.value);
-    // Aquí podrías implementar búsqueda con debounce
+
+    // Debounce: esperar 500ms después del último cambio para buscar
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      this.paginaActual.set(1); // Volver a la primera página al buscar
+      this.cargarNoticias();
+    }, 500);
   }
 
   getPaginas(): (number | string)[] {
@@ -78,19 +95,19 @@ export class Home implements OnInit {
       }
     } else {
       paginas.push(1);
-      
+
       if (actual > 3) {
         paginas.push('...');
       }
-      
+
       for (let i = Math.max(2, actual - 1); i <= Math.min(total - 1, actual + 1); i++) {
         paginas.push(i);
       }
-      
+
       if (actual < total - 2) {
         paginas.push('...');
       }
-      
+
       paginas.push(total);
     }
 
@@ -105,5 +122,15 @@ export class Home implements OnInit {
       'Comunidad': '#059669'
     };
     return colores[categoria] || '#666';
+  }
+
+  verNoticia(noticia: Noticia) {
+    this.noticiaSeleccionada.set(noticia);
+    this.showModal.set(true);
+  }
+
+  cerrarModal() {
+    this.showModal.set(false);
+    this.noticiaSeleccionada.set(null);
   }
 }

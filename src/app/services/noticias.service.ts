@@ -10,9 +10,9 @@ import { ApiConfig } from './api-config.service';
 export class NoticiasService {
   private http = inject(HttpClient);
   private apiConfig = inject(ApiConfig);
-  
+
   private baseUrl = `${this.apiConfig.baseUrl}/noticias`;
-  
+
   private categorias = signal<string[]>(['Todos', 'Noticias Locales', 'Deportes', 'Cultura', 'Comunidad']);
   private noticiasCache = signal<Noticia[]>([]);
 
@@ -24,13 +24,17 @@ export class NoticiasService {
     return this.noticiasCache;
   }
 
-  getNoticiasPaginadas(pagina: number, itemsPorPagina: number, categoria?: string): Observable<PaginacionResult<Noticia>> {
+  getNoticiasPaginadas(pagina: number, itemsPorPagina: number, categoria?: string, busqueda?: string): Observable<PaginacionResult<Noticia>> {
     let params = new HttpParams()
       .set('pagina', pagina.toString())
       .set('items_por_pagina', itemsPorPagina.toString());
-    
+
     if (categoria && categoria !== 'Todos') {
       params = params.set('categoria', categoria);
+    }
+
+    if (busqueda && busqueda.trim()) {
+      params = params.set('busqueda', busqueda.trim());
     }
 
     return this.http.get<any>(this.baseUrl, { params }).pipe(
