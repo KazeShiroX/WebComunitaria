@@ -1,24 +1,23 @@
-from pydantic_settings import BaseSettings
-from typing import Optional
+import os
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    # App settings
-    APP_NAME: str = "Ríos Informa API"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = True
+load_dotenv()
+
+class Config:
+    # Base de datos
+    DB_HOST = os.getenv('DB_HOST', 'localhost')
+    DB_PORT = os.getenv('DB_PORT', '3306')
+    DB_USER = os.getenv('DB_USER', 'root')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', 'Ruben2004')
+    DB_NAME = os.getenv('DB_NAME', 'webcomunitaria')
     
-    # Database
-    DATABASE_URL: str = "sqlite+aiosqlite:///./noticias.db"
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # JWT Settings
-    SECRET_KEY: str = "tu-clave-secreta-muy-segura-cambiar-en-produccion"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 horas
+    # JWT
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    JWT_ALGORITHM = 'HS256'
+    JWT_EXPIRATION_HOURS = 24
     
     # CORS
-    CORS_ORIGINS: list = ["http://localhost:4200", "http://127.0.0.1:4200"]
-    
-    class Config:
-        env_file = ".env"
-
-settings = Settings()
+    CORS_ORIGINS = ['http://localhost:4200']

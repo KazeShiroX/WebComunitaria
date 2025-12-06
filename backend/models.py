@@ -1,43 +1,64 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship
 from datetime import datetime
-import enum
-from database import Base
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class RolEnum(str, enum.Enum):
-    admin = "admin"
-    usuario = "usuario"
+db = SQLAlchemy()
 
-class Usuario(Base):
-    __tablename__ = "usuarios"
+class Usuario(db.Model):
+    __tablename__ = 'usuarios'
     
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(100), nullable=False)
-    email = Column(String(100), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    rol = Column(Enum(RolEnum), default=RolEnum.usuario)
-    avatar = Column(String(500), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    rol = db.Column(db.Enum('admin', 'usuario'), default='usuario', nullable=False)
+    avatar = db.Column(db.String(255), nullable=True)
+    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relaciones
-    noticias = relationship("Noticia", back_populates="autor")
+    # Relación con noticias
+    noticias = db.relationship('Noticia', backref='autor_obj', lazy=True, cascade='all, delete-orphan')
+    
+    def set_password(self, password):
+        """Hashear la contraseña"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Verificar la contraseña"""
+        return check_password_hash(self.password_hash, password)
+    
+    def to_dict(self):
+        """Convertir a diccionario"""
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'email': self.email,
+            'rol': self.rol,
+            'avatar': self.avatar
+        }
 
-class Noticia(Base):
-    __tablename__ = "noticias"
+
+class Noticia(db.Model):
+    __tablename__ = 'noticias'
     
-    id = Column(Integer, primary_key=True, index=True)
-    titulo = Column(String(200), nullable=False)
-    descripcion = Column(Text, nullable=False)
-    contenido = Column(Text, nullable=False)
-    categoria = Column(String(50), nullable=False)
-    imagen = Column(String(500), nullable=True)
-    fecha = Column(DateTime, default=datetime.utcnow)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(200), nullable=False)
+    descripcion = db.Column(db.Text, nullable=False)
+    contenido = db.Column(db.Text, nullable=False)
+    categoria = db.Column(db.String(50), nullable=False)
+    imagen = db.Column(db.String(500), nullable=True)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    autor_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     
-    # Foreign Keys
-    autor_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
-    
-    # Relaciones
-    autor = relationship("Usuario", back_populates="noticias")
+    def to_dict(self):
+        """Convertir a diccionario"""
+        return {
+            'id': self.id,
+            'titulo': self.titulo,
+            'descripcion': self.descripcion,
+            'contenido': self.contenido,
+            'categoria': self.categoria,
+            'imagen': self.imagen or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=250&fit=crop',
+            'fecha': self.fecha.isoformat(),
+            'autor_id': self.autor_id,
+            'autor_nombre': self.autor_obj.nombre if self.autor_obj else 'Desconocido'
+        }

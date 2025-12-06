@@ -19,19 +19,20 @@ export class Admin implements OnInit {
 
   noticias = signal<Noticia[]>([]);
   categorias = this.noticiasService.getCategorias();
-  
+
   showForm = signal(false);
   editingNoticia = signal<Noticia | null>(null);
   loading = signal(false);
-  
+  uploadingImage = signal(false);
+
   // Form fields
   titulo = signal('');
   descripcion = signal('');
   contenido = signal('');
   categoria = signal('');
   imagen = signal('');
-  
-  mensaje = signal<{tipo: 'success' | 'error', texto: string} | null>(null);
+
+  mensaje = signal<{ tipo: 'success' | 'error', texto: string } | null>(null);
 
   constructor() {
     // Verificar autenticación
@@ -167,5 +168,57 @@ export class Admin implements OnInit {
       'Comunidad': '#059669'
     };
     return colores[categoria] || '#666';
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+
+    // Validar tipo de archivo
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.mostrarMensaje('error', 'Tipo de archivo no permitido. Solo imágenes PNG, JPG, GIF o WEBP');
+      input.value = '';
+      return;
+    }
+
+    // Validar tamaño (5MB máximo)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      this.mostrarMensaje('error', 'La imagen es demasiado grande. Máximo 5MB');
+      input.value = '';
+      return;
+    }
+
+    // Subir archivo
+    this.uploadingImage.set(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('http://localhost:8000/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al subir la imagen');
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.imagen.set(data.url);
+        this.mostrarMensaje('success', 'Imagen subida exitosamente');
+        this.uploadingImage.set(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        this.mostrarMensaje('error', 'Error al subir la imagen');
+        this.uploadingImage.set(false);
+        input.value = '';
+      });
   }
 }
