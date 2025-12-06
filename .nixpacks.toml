@@ -11,4 +11,4 @@ cmds = ["cd backend && pip install -r requirements.txt"]
 cmds = ["echo 'Frontend already built'"]
 
 [start]
-cmd = "cd backend && python app.py"
+cmd = "cd backend && python3 app.py"
