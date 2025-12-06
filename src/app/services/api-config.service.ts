@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiConfig {
-  readonly baseUrl = 'http://localhost:8000/api';
+  // Railway detecta automáticamente o usa localhost
+  baseUrl = environment.apiUrl || 'http://localhost:8000/api';
 }
