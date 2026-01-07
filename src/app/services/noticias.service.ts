@@ -38,23 +38,58 @@ export class NoticiasService {
     }
 
     return this.http.get<any>(this.baseUrl, { params }).pipe(
-      map(response => ({
-        items: response.items.map((item: any) => ({
+      map(response => {
+        const noticiasApi = response.items.map((item: any) => ({
           ...item,
           fecha: new Date(item.fecha),
           autor: item.autor_nombre
-        })),
-        totalItems: response.total_items,
-        totalPaginas: response.total_paginas,
-        paginaActual: response.pagina_actual,
-        itemsPorPagina: response.items_por_pagina
-      })),
+        }));
+
+        // Mock noticia Posada
+        const noticiaPosada: Noticia = {
+            id: 9999,
+            titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
+            descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
+            contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
+            fecha: new Date(),
+            autor: 'Administrador',
+            categoria: 'Comunidad',
+            imagen: 'images/posada_1.jpg'
+        };
+
+        // Add to beginning if searching 'Todos' or 'Comunidad' or empty search
+        let items = noticiasApi;
+        if ((!categoria || categoria === 'Todos' || categoria === 'Comunidad') && (!busqueda || busqueda.trim() === '')) {
+             items = [noticiaPosada, ...noticiasApi];
+        }
+
+        return {
+          items: items,
+          totalItems: response.total_items + 1, // Add 1 for the mock item
+          totalPaginas: response.total_paginas, // Keep same for now or calc properly if needed
+          paginaActual: response.pagina_actual,
+          itemsPorPagina: response.items_por_pagina
+        };
+      }),
       tap(result => this.noticiasCache.set(result.items)),
       catchError(error => {
         console.error('Error al obtener noticias:', error);
+        
+        // Fallback with mock data if API fails
+        const noticiaPosada: Noticia = {
+            id: 9999,
+            titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
+            descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
+            contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
+            fecha: new Date(),
+            autor: 'Administrador',
+            categoria: 'Comunidad',
+            imagen: 'images/posada_1.jpg'
+        };
+
         return of({
-          items: [],
-          totalItems: 0,
+          items: [noticiaPosada],
+          totalItems: 1,
           totalPaginas: 1,
           paginaActual: 1,
           itemsPorPagina
