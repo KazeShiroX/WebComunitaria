@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from flask_cors import CORS
 from config import Config
 from models import db
@@ -17,11 +17,31 @@ def create_app():
     
     # Inicializar extensiones
     db.init_app(app)
-    CORS(app, 
-         origins=Config.CORS_ORIGINS, 
-         supports_credentials=True,
-         allow_headers=["Content-Type", "Authorization"],
-         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+    
+    # CORS manual para garantizar headers en TODAS las respuestas
+    @app.after_request
+    def add_cors_headers(response):
+        origin = request.headers.get('Origin', '')
+        allowed_origins = Config.CORS_ORIGINS
+        if origin in allowed_origins:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
+
+    @app.before_request
+    def handle_preflight():
+        if request.method == 'OPTIONS':
+            origin = request.headers.get('Origin', '')
+            if origin in Config.CORS_ORIGINS:
+                from flask import make_response
+                response = make_response()
+                response.headers['Access-Control-Allow-Origin'] = origin
+                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+                response.headers['Access-Control-Allow-Credentials'] = 'true'
+                return response, 204
     
     # Registrar blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -33,31 +53,15 @@ def create_app():
     def uploaded_file(filename):
         return send_from_directory('uploads', filename)
     
-    # Health check para Railway
+    # Health check
     @app.route('/api/health')
     def health():
         return {'status': 'healthy'}, 200
     
-    # Servir el frontend de Angular
     # Ruta raíz informativa
     @app.route('/')
     def index():
-        return {'message': 'Backend WebComunitaria funcionando. Usa http://localhost:4200 para ver la página web.'}, 200
-
-    # Servir el frontend de Angular - DESACTIVADO para evitar conflictos
-    # @app.route('/', defaults={'path': ''})
-    # @app.route('/<path:path>')
-    # def serve_frontend(path):
-    #     # Si es una ruta de API, no hacer nada (ya está manejado por blueprints)
-    #     if path.startswith('api/'):
-    #         return {'error': 'Not found'}, 404
-        
-    #     # Intentar servir el archivo estático
-    #     if path and os.path.exists(os.path.join(app.static_folder, path)):
-    #         return send_from_directory(app.static_folder, path)
-        
-    #     # Para cualquier otra ruta, servir index.html (Angular routing)
-    #     return send_from_directory(app.static_folder, 'index.html')
+        return {'message': 'Backend WebComunitaria funcionando.'}, 200
     
     # Crear tablas y carpeta de uploads si no existen
     with app.app_context():
