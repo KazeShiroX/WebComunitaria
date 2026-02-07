@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Base de datos
+    # Base de datos - soporta DATABASE_URL (Railway/DOM Cloud) y fallback a MySQL local
     DATABASE_URL = os.getenv('DATABASE_URL')
     
     if DATABASE_URL:
@@ -14,6 +14,7 @@ class Config:
         elif DATABASE_URL.startswith('postgres://'):
             SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('postgres://', 'postgresql://')
         else:
+            # SQLite u otros (DOM Cloud usa sqlite)
             SQLALCHEMY_DATABASE_URI = DATABASE_URL
     else:
         # Local development
@@ -31,8 +32,19 @@ class Config:
     JWT_ALGORITHM = 'HS256'
     JWT_EXPIRATION_HOURS = 24
     
+<<<<<<< Updated upstream
     # CORS
     CORS_ORIGINS = ["*"]
+=======
+    # CORS - soporta CORS_ORIGINS como variable de entorno (separadas por coma)
+    _extra_origins = [o.strip() for o in os.getenv('CORS_ORIGINS', '').split(',') if o.strip()]
+    CORS_ORIGINS = [
+        'http://localhost:4200',
+        'http://127.0.0.1:4200',
+        os.getenv('RAILWAY_PUBLIC_DOMAIN', ''),
+        f"https://{os.getenv('RAILWAY_PUBLIC_DOMAIN', '')}"
+    ] + _extra_origins
+>>>>>>> Stashed changes
     
     # Puerto
     PORT = int(os.getenv('PORT', 8000))
