@@ -1,0 +1,209 @@
+/* Background Styles (Matching Home) */
+.contact-wrapper {
+    min-height: 100vh;
+    width: 100%;
+    background-color: #fefcff;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.dreamy-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+        radial-gradient(circle at 30% 70%, rgba(37, 99, 235, 0.25), transparent 60%),
+        radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.034), transparent 60%);
+    pointer-events: none;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.hero p {
+    color: #64748b;
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Team Grid */
+.team-section {
+    margin-bottom: 4rem;
+}
+
+.team-section h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #334155;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.members-list {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Member Card */
+.member-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    padding: 2.5rem;
+    text-align: center;
+    width: 300px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.advisor-card {
+    margin: 0 auto;
+    max-width: 400px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+/* Avatar */
+.avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.advisor-avatar {
+    background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+    box-shadow: 0 4px 10px rgba(219, 39, 119, 0.3);
+}
+
+/* Typography */
+.member-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.member-card p {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.advisor-desc {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Contact Info Section */
+.contact-info-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.contact-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-wrapper {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.contact-card h2 {
+    font-size: 1.75rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.contact-card p {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.contact-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.contact-button:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+}
+
+.whatsapp-icon {
+    font-size: 1.25rem;
+}

@@ -1,0 +1,51 @@
+<div class="contact-wrapper">
+    <!-- Dreamy Sky Pink Glow Background -->
+    <div class="dreamy-background"></div>
+
+    <div class="contact-container">
+        <section class="hero">
+            <h1>Nuestro Equipo</h1>
+            <p>Conoce a los brigadistas y a nuestro asesor que hacen posible este proyecto.</p>
+        </section>
+
+        <div class="team-grid">
+            <!-- Brigadistas Section -->
+            <section class="team-section">
+                <h2>Brigadistas</h2>
+                <div class="members-list">
+                    @for (member of brigadistas; track member.name) {
+                    <div class="member-card">
+                        <div class="avatar-placeholder">{{ member.name.charAt(0) }}</div>
+                        <h3>{{ member.name }}</h3>
+                        <p>{{ member.role }}</p>
+                    </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Advisor Section -->
+            <section class="team-section advisor-section">
+                <h2>Asesor</h2>
+                <div class="member-card advisor-card">
+                    <div class="avatar-placeholder advisor-avatar">{{ advisor.name.charAt(0) }}</div>
+                    <h3>{{ advisor.name }}</h3>
+                    <p>{{ advisor.role }}</p>
+                    <p class="advisor-desc">Nos instruye para llevar a cabo las actividades correctamente.</p>
+                </div>
+            </section>
+
+            <!-- Contact Info Section -->
+            <section class="team-section contact-info-section">
+                <div class="contact-card">
+                    <div class="icon-wrapper">📢</div>
+                    <h2>¿Tienes una noticia relevante?</h2>
+                    <p>Si tienes información importante para la comunidad, contáctanos.</p>
+                    <a href="https://wa.me/526871932760" target="_blank" class="contact-button">
+                        <span class="whatsapp-icon">📱</span>
+                        Envíanos un mensaje
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
