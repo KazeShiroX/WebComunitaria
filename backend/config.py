@@ -33,9 +33,12 @@ class Config:
     JWT_EXPIRATION_HOURS = 24
     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     # CORS
     CORS_ORIGINS = ["*"]
 =======
+=======
+>>>>>>> Stashed changes
     # CORS - soporta CORS_ORIGINS como variable de entorno (separadas por coma)
     _extra_origins = [o.strip() for o in os.getenv('CORS_ORIGINS', '').split(',') if o.strip()]
     CORS_ORIGINS = [
@@ -44,6 +47,9 @@ class Config:
         os.getenv('RAILWAY_PUBLIC_DOMAIN', ''),
         f"https://{os.getenv('RAILWAY_PUBLIC_DOMAIN', '')}"
     ] + _extra_origins
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     
     # Puerto
