@@ -180,3 +180,40 @@
     display: flex;
   }
 }
+
+.user-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-btn i {
+  font-size: 1.25rem;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.notification-btn:hover i {
+  color: #2563eb;
+}

@@ -16,10 +16,12 @@
     <div class="header-actions">
       @if (authService.isLoggedIn()) {
       <button class="notification-btn">
-        <span class="notification-icon">🔔</span>
+        <i class="bi bi-bell"></i>
       </button>
       <div class="user-menu">
-        <img [src]="authService.usuario()?.avatar" alt="Avatar" class="user-avatar" />
+        <div class="user-avatar-placeholder">
+          {{ userInitial() }}
+        </div>
         <div class="dropdown-menu">
           @if (authService.isAdmin()) {
           <a routerLink="/admin">Panel Admin</a>
