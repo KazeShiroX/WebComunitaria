@@ -35,6 +35,7 @@
   padding: 0.75rem 1rem;
   max-width: 500px;
   margin: 0 auto;
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .search-icon {
@@ -98,10 +99,11 @@
   border-radius: 16px;
   overflow: hidden;
   transition: box-shadow 0.2s;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .noticia-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 30, 255, 0.1);
 }
 
 .noticia-imagen {
