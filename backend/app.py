@@ -35,19 +35,25 @@ def create_app():
         return {'status': 'healthy'}, 200
     
     # Servir el frontend de Angular
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve_frontend(path):
-        # Si es una ruta de API, no hacer nada (ya está manejado por blueprints)
-        if path.startswith('api/'):
-            return {'error': 'Not found'}, 404
+    # Ruta raíz informativa
+    @app.route('/')
+    def index():
+        return {'message': 'Backend WebComunitaria funcionando. Usa http://localhost:4200 para ver la página web.'}, 200
+
+    # Servir el frontend de Angular - DESACTIVADO para evitar conflictos
+    # @app.route('/', defaults={'path': ''})
+    # @app.route('/<path:path>')
+    # def serve_frontend(path):
+    #     # Si es una ruta de API, no hacer nada (ya está manejado por blueprints)
+    #     if path.startswith('api/'):
+    #         return {'error': 'Not found'}, 404
         
-        # Intentar servir el archivo estático
-        if path and os.path.exists(os.path.join(app.static_folder, path)):
-            return send_from_directory(app.static_folder, path)
+    #     # Intentar servir el archivo estático
+    #     if path and os.path.exists(os.path.join(app.static_folder, path)):
+    #         return send_from_directory(app.static_folder, path)
         
-        # Para cualquier otra ruta, servir index.html (Angular routing)
-        return send_from_directory(app.static_folder, 'index.html')
+    #     # Para cualquier otra ruta, servir index.html (Angular routing)
+    #     return send_from_directory(app.static_folder, 'index.html')
     
     # Crear tablas y carpeta de uploads si no existen
     with app.app_context():

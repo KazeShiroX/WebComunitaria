@@ -9,12 +9,24 @@ def login():
     """Endpoint de login"""
     data = request.get_json()
     
+    print(f"DEBUG LOGIN Attempt: Data received: {data}")
+
     if not data or not data.get('email') or not data.get('password'):
+        print("DEBUG LOGIN: Missing fields")
         return jsonify({'detail': 'Email y contraseña requeridos'}), 400
     
     # Buscar usuario
     usuario = Usuario.query.filter_by(email=data['email']).first()
     
+    if usuario:
+        print(f"DEBUG LOGIN: User found: {usuario.email}, Role: {usuario.rol}")
+        is_valid = usuario.check_password(data['password'])
+        print(f"DEBUG LOGIN: Password valid? {is_valid}")
+        if not is_valid:
+            print(f"DEBUG LOGIN: Hash in DB: {usuario.password_hash}")
+    else:
+        print(f"DEBUG LOGIN: User NOT found for email: {data['email']}")
+
     if not usuario or not usuario.check_password(data['password']):
         return jsonify({'detail': 'Credenciales incorrectas'}), 401
     
@@ -33,11 +45,16 @@ def register():
     """Endpoint de registro"""
     data = request.get_json()
     
+    print(f"DEBUG REGISTER Attempt: Data received: {data}")
+
     if not data or not data.get('email') or not data.get('password') or not data.get('nombre'):
+        print("DEBUG REGISTER: Missing fields")
         return jsonify({'detail': 'Nombre, email y contraseña requeridos'}), 400
     
     # Verificar si el usuario ya existe
-    if Usuario.query.filter_by(email=data['email']).first():
+    existing = Usuario.query.filter_by(email=data['email']).first()
+    if existing:
+        print(f"DEBUG REGISTER: Email already exists: {data['email']}")
         return jsonify({'detail': 'El email ya está registrado'}), 400
     
     # Crear nuevo usuario

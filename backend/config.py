@@ -32,12 +32,7 @@ class Config:
     JWT_EXPIRATION_HOURS = 24
     
     # CORS
-    CORS_ORIGINS = [
-        'http://localhost:4200',
-        'http://127.0.0.1:4200',
-        os.getenv('RAILWAY_PUBLIC_DOMAIN', ''),
-        f"https://{os.getenv('RAILWAY_PUBLIC_DOMAIN', '')}"
-    ]
+    CORS_ORIGINS = ["*"]
     
     # Puerto
     PORT = int(os.getenv('PORT', 8000))
