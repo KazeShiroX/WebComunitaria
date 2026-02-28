@@ -49,8 +49,9 @@ def upload_file():
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(filepath)
         
-        # Generar URL para acceder a la imagen
-        image_url = f"http://localhost:8000/uploads/{unique_filename}"
+        # Generar URL para acceder a la imagen (usando el host actual)
+        base_url = request.host_url.rstrip('/')
+        image_url = f"{base_url}/uploads/{unique_filename}"
         
         return jsonify({
             'url': image_url,
