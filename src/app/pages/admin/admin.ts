@@ -197,13 +197,12 @@ export class Admin implements OnInit {
       return;
     }
 
-    // Subir archivo
     this.uploadingImage.set(true);
     const formData = new FormData();
     formData.append('file', file);
 
-    // Construir URL correcta del backend
-    const uploadUrl = `${this.apiConfig.baseUrl.replace('/api', '')}/upload`;
+    // URL correcta: /api/upload (no solo /upload)
+    const uploadUrl = `${this.apiConfig.baseUrl}/upload`;
 
     fetch(uploadUrl, {
       method: 'POST',
@@ -219,7 +218,6 @@ export class Admin implements OnInit {
         return response.json();
       })
       .then(data => {
-        // El backend devuelve { url: "ruta/completa/imagen.jpg" }
         this.imagen.set(data.url);
         this.mostrarMensaje('success', 'Imagen subida exitosamente');
         this.uploadingImage.set(false);
