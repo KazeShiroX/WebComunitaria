@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
-from config import Config
 import os
 import uuid
 from datetime import datetime
@@ -50,8 +49,28 @@ def upload_file():
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(filepath)
         
-        # Generar URL para acceder a la imagen (usando el BACKEND_URL configurado)
-        image_url = f"{Config.BACKEND_URL}/uploads/{unique_filename}"
+        # Generar URL para acceder a la imagen
+        # Intentar detectar el dominio correctamente desde múltiples sources
+        protocol = request.headers.get('X-Forwarded-Proto', request.scheme)
+        
+        # Intentar obtener host desde múltiples headers (para reverse proxies)
+        host = (
+            request.headers.get('X-Forwarded-Host') or  # Common in cloud providers
+            request.headers.get('X-Original-Host') or   # Alternative header
+            request.host                                 # Fallback
+        )
+        
+        # Si está en localhost en producción, usar la variable de entorno
+        if 'localhost' in host or '127.0.0.1' in host:
+            backend_url = os.getenv('BACKEND_URL')
+            if backend_url:
+                image_url = f"{backend_url}/uploads/{unique_filename}"
+            else:
+                base_url = f"{protocol}://{host}"
+                image_url = f"{base_url}/uploads/{unique_filename}"
+        else:
+            base_url = f"{protocol}://{host}"
+            image_url = f"{base_url}/uploads/{unique_filename}"
         
         return jsonify({
             'url': image_url,
