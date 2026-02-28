@@ -199,7 +199,7 @@ export class Admin implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch('http://localhost:8000/api/upload', {
+    fetch(`${window.location.origin}/api/upload`, {
       method: 'POST',
       body: formData
     })
