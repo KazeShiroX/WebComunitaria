@@ -1,4 +1,5 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://webcomunitaria.mnz.dom.my.id/api'
+    apiUrl: 'https://cavernous-assumption-fur.osk.dom.my.id/api'
+    
 };
