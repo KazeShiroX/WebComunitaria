@@ -18,30 +18,21 @@ def create_app():
     # Inicializar extensiones
     db.init_app(app)
     
-    # CORS manual para garantizar headers en TODAS las respuestas
+    # CORS simplificado
+    CORS(app, resources={r"/api/*": {
+        "origins": Config.CORS_ORIGINS,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }})
+    
     @app.after_request
     def add_cors_headers(response):
         origin = request.headers.get('Origin', '')
-        allowed_origins = Config.CORS_ORIGINS
-        if origin in allowed_origins:
+        if origin in Config.CORS_ORIGINS:
             response.headers['Access-Control-Allow-Origin'] = origin
-            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
-
-    @app.before_request
-    def handle_preflight():
-        if request.method == 'OPTIONS':
-            origin = request.headers.get('Origin', '')
-            if origin in Config.CORS_ORIGINS:
-                from flask import make_response
-                response = make_response()
-                response.headers['Access-Control-Allow-Origin'] = origin
-                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-                response.headers['Access-Control-Allow-Credentials'] = 'true'
-                return response, 204
     
     # Registrar blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
