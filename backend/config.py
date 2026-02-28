@@ -40,6 +40,7 @@ class Config:
     CORS_ORIGINS = [
         'http://localhost:4200',
         'http://127.0.0.1:4200',
+        'https://webcomunitariajjr.netlify.app',
     ] + _extra_origins
 
     # Agregar dominio de Railway si existe
