@@ -36,6 +36,11 @@ export class Home implements OnInit {
     this.cargarNoticias();
   }
 
+  getImageUrl(path: string | undefined): string {
+    if (!path) return '';
+    return this.noticiasService.getImageUrl(path);
+  }
+
   cargarNoticias() {
     this.loading.set(true);
     this.noticiasService.getNoticiasPaginadas(

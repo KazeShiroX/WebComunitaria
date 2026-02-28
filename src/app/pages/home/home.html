@@ -27,7 +27,7 @@
     <section class="noticias-grid">
       @for (noticia of noticiasPaginadas().items; track noticia.id) {
       <article class="noticia-card" (click)="verNoticia(noticia)" style="cursor: pointer;">
-        <img [src]="noticia.imagen" [alt]="noticia.titulo" class="noticia-imagen" />
+        <img [src]="getImageUrl(noticia.imagen)" [alt]="noticia.titulo" class="noticia-imagen" />
         <div class="noticia-content">
           <span class="noticia-categoria" [style.color]="getCategoriaColor(noticia.categoria)">
             {{ noticia.categoria }}
@@ -75,7 +75,7 @@
 
     <!-- Imagen de portada -->
     <div style="position: relative; width: 100%; height: 400px; overflow: hidden; border-radius: 20px 20px 0 0;">
-      <img [src]="noticiaSeleccionada()!.imagen" [alt]="noticiaSeleccionada()!.titulo"
+      <img [src]="getImageUrl(noticiaSeleccionada()?.imagen)" [alt]="noticiaSeleccionada()!.titulo"
         style="width: 100%; height: 100%; object-fit: cover;">
 
       <!-- Botón cerrar -->

@@ -24,6 +24,10 @@ export class NoticiasService {
     return this.noticiasCache;
   }
 
+  getImageUrl(path: string): string {
+    return this.apiConfig.getImageUrl(path);
+  }
+
   getNoticiasPaginadas(pagina: number, itemsPorPagina: number, categoria?: string, busqueda?: string): Observable<PaginacionResult<Noticia>> {
     let params = new HttpParams()
       .set('pagina', pagina.toString())
@@ -47,20 +51,20 @@ export class NoticiasService {
 
         // Mock noticia Posada
         const noticiaPosada: Noticia = {
-            id: 9999,
-            titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
-            descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
-            contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
-            fecha: new Date(),
-            autor: 'Administrador',
-            categoria: 'Comunidad',
-            imagen: 'images/posada_1.jpg'
+          id: 9999,
+          titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
+          descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
+          contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
+          fecha: new Date(),
+          autor: 'Administrador',
+          categoria: 'Comunidad',
+          imagen: 'images/posada_1.jpg'
         };
 
         // Add to beginning if searching 'Todos' or 'Comunidad' or empty search
         let items = noticiasApi;
         if ((!categoria || categoria === 'Todos' || categoria === 'Comunidad') && (!busqueda || busqueda.trim() === '')) {
-             items = [noticiaPosada, ...noticiasApi];
+          items = [noticiaPosada, ...noticiasApi];
         }
 
         return {
@@ -74,17 +78,17 @@ export class NoticiasService {
       tap(result => this.noticiasCache.set(result.items)),
       catchError(error => {
         console.error('Error al obtener noticias:', error);
-        
+
         // Fallback with mock data if API fails
         const noticiaPosada: Noticia = {
-            id: 9999,
-            titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
-            descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
-            contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
-            fecha: new Date(),
-            autor: 'Administrador',
-            categoria: 'Comunidad',
-            imagen: 'images/posada_1.jpg'
+          id: 9999,
+          titulo: 'Posada Navideña en Facultad de Agronomía Juan José Ríos',
+          descripcion: 'Celebración navideña para niños de la "escuelita" con diferentes actividades y regalos.',
+          contenido: 'Se realizó una emotiva posada navideña para los niños de la "escuelita" en las instalaciones de la Facultad de Agronomía Juan José Ríos. Durante el evento, se llevaron a cabo diversas actividades recreativas y juegos para la diversión de los pequeños. El momento más esperado fue la entrega de regalos, donde cada niño recibió un presente navideño, llenando de alegría y sonrisas el lugar. Fue una jornada llena de espíritu navideño y convivencia comunitaria.',
+          fecha: new Date(),
+          autor: 'Administrador',
+          categoria: 'Comunidad',
+          imagen: 'images/posada_1.jpg'
         };
 
         return of({

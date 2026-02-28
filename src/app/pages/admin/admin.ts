@@ -48,6 +48,10 @@ export class Admin implements OnInit {
     this.cargarNoticias();
   }
 
+  getImageUrl(path: string): string {
+    return this.noticiasService.getImageUrl(path);
+  }
+
   cargarNoticias() {
     this.loading.set(true);
     this.noticiasService.getNoticiasPaginadas(1, 100).subscribe({

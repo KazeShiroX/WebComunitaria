@@ -30,7 +30,7 @@
         @for (noticia of noticias(); track noticia.id) {
         <tr>
           <td>
-            <img [src]="noticia.imagen" [alt]="noticia.titulo" class="table-img" />
+            <img [src]="getImageUrl(noticia.imagen)" [alt]="noticia.titulo" class="table-img" />
           </td>
           <td>
             <div class="noticia-info">
@@ -162,7 +162,7 @@
       <!-- Preview -->
       @if (imagen()) {
       <div style="margin-top: 10px;">
-        <img [src]="imagen()" alt="Preview"
+        <img [src]="getImageUrl(imagen())" alt="Preview"
           style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd;">
       </div>
       }
