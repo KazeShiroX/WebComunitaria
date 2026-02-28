@@ -21,7 +21,7 @@ def create_app():
     # Configurar CORS para todos los /api/* routes
     CORS(app, 
          resources={r"/api/*": {
-             "origins": Config.CORS_ORIGINS,
+             "origins": ["https://webcomunitariajjr.netlify.app", "http://localhost:4200"],
              "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization"],
              "supports_credentials": True,
@@ -33,15 +33,13 @@ def create_app():
     @app.after_request
     def after_request_func(response):
         origin = request.headers.get('Origin')
+        allowed_origins = ["https://webcomunitariajjr.netlify.app", "http://localhost:4200"]
         
-        # Debug: imprimir lo que estamos recibiendo
-        if origin:
-            # Si el origen está en la lista permitida, agregar headers
-            if origin in Config.CORS_ORIGINS:
-                response.headers['Access-Control-Allow-Origin'] = origin
-                response.headers['Access-Control-Allow-Credentials'] = 'true'
-            # ALTERNATIVA: permitir todos los orígenes (solo para debug, cambiar después)
-            # response.headers['Access-Control-Allow-Origin'] = '*'
+        if origin in allowed_origins:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         
         return response
     
