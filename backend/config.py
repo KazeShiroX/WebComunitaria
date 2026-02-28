@@ -34,19 +34,24 @@ class Config:
     JWT_EXPIRATION_HOURS = 24
     
     # --- CORS ---
-    # Combina orígenes locales, de Railway y variables de entorno
-    _extra_origins = [o.strip() for o in os.getenv('CORS_ORIGINS', '').split(',') if o.strip()]
-    
+    # Orígenes permitidos - prioriza hardcoded, luego variables de entorno
     CORS_ORIGINS = [
         'http://localhost:4200',
         'http://127.0.0.1:4200',
-        'https://webcomunitariajjr.netlify.app',
-    ] + _extra_origins
-
-    # Agregar dominio de Railway si existe
+        'https://webcomunitariajjr.netlify.app',  # Frontend en Netlify
+    ]
+    
+    # Agregar CORS_ORIGINS desde variable de entorno si existe
+    extra_cors = os.getenv('CORS_ORIGINS', '').strip()
+    if extra_cors and extra_cors not in CORS_ORIGINS:
+        CORS_ORIGINS.append(extra_cors)
+    
+    # Agregar dominio de Railway/doomcloud si existe
     railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
     if railway_domain:
-        CORS_ORIGINS.append(f"https://{railway_domain}")
+        domain_url = f"https://{railway_domain}"
+        if domain_url not in CORS_ORIGINS:
+            CORS_ORIGINS.append(domain_url)
     
     # --- SERVIDOR ---
     PORT = int(os.getenv('PORT', 8000))

@@ -19,7 +19,6 @@ def create_app():
     db.init_app(app)
     
     # Configurar CORS para todos los /api/* routes
-    # flask-cors maneja automáticamente preflight requests y headers
     CORS(app, 
          resources={r"/api/*": {
              "origins": Config.CORS_ORIGINS,
@@ -29,6 +28,22 @@ def create_app():
              "max_age": 3600
          }},
          expose_headers=["Content-Type"])
+    
+    # Handler adicional para garantizar headers CORS
+    @app.after_request
+    def after_request_func(response):
+        origin = request.headers.get('Origin')
+        
+        # Debug: imprimir lo que estamos recibiendo
+        if origin:
+            # Si el origen está en la lista permitida, agregar headers
+            if origin in Config.CORS_ORIGINS:
+                response.headers['Access-Control-Allow-Origin'] = origin
+                response.headers['Access-Control-Allow-Credentials'] = 'true'
+            # ALTERNATIVA: permitir todos los orígenes (solo para debug, cambiar después)
+            # response.headers['Access-Control-Allow-Origin'] = '*'
+        
+        return response
     
     # Registrar blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
