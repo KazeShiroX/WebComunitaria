@@ -49,28 +49,17 @@ def upload_file():
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(filepath)
         
-        # Generar URL para acceder a la imagen
-        # Intentar detectar el dominio correctamente desde múltiples sources
-        protocol = request.headers.get('X-Forwarded-Proto', request.scheme)
+        # Obtener la URL base del backend desde la variable de entorno
+        backend_url = os.getenv('BACKEND_URL')
         
-        # Intentar obtener host desde múltiples headers (para reverse proxies)
-        host = (
-            request.headers.get('X-Forwarded-Host') or  # Common in cloud providers
-            request.headers.get('X-Original-Host') or   # Alternative header
-            request.host                                 # Fallback
-        )
+        # Si no existe variable de entorno, construir desde los headers
+        if not backend_url:
+            protocol = request.headers.get('X-Forwarded-Proto', request.scheme)
+            host = request.headers.get('X-Forwarded-Host', request.host)
+            backend_url = f"{protocol}://{host}"
         
-        # Si está en localhost en producción, usar la variable de entorno
-        if 'localhost' in host or '127.0.0.1' in host:
-            backend_url = os.getenv('BACKEND_URL')
-            if backend_url:
-                image_url = f"{backend_url}/uploads/{unique_filename}"
-            else:
-                base_url = f"{protocol}://{host}"
-                image_url = f"{base_url}/uploads/{unique_filename}"
-        else:
-            base_url = f"{protocol}://{host}"
-            image_url = f"{base_url}/uploads/{unique_filename}"
+        # Construir URL completa de la imagen
+        image_url = f"{backend_url}/uploads/{unique_filename}"
         
         return jsonify({
             'url': image_url,
