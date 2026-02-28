@@ -49,17 +49,9 @@ def upload_file():
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(filepath)
         
-        # Obtener la URL base del backend desde la variable de entorno
-        backend_url = os.getenv('BACKEND_URL')
-        
-        # Si no existe variable de entorno, construir desde los headers
-        if not backend_url:
-            protocol = request.headers.get('X-Forwarded-Proto', request.scheme)
-            host = request.headers.get('X-Forwarded-Host', request.host)
-            backend_url = f"{protocol}://{host}"
-        
-        # Construir URL completa de la imagen
-        image_url = f"{backend_url}/uploads/{unique_filename}"
+        # Guardar SOLO la ruta relativa en la BD, no la URL absoluta
+        # Esto evita problemas de Mixed Content y dependencias de dominio
+        image_url = f"/uploads/{unique_filename}"
         
         return jsonify({
             'url': image_url,
