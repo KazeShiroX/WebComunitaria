@@ -202,23 +202,30 @@ export class Admin implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch(`${this.apiConfig.baseUrl}/upload`, {
+    // Construir URL correcta del backend
+    const uploadUrl = `${this.apiConfig.baseUrl.replace('/api', '')}/upload`;
+
+    fetch(uploadUrl, {
       method: 'POST',
-      body: formData
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      }
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Error al subir la imagen');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
       })
       .then(data => {
+        // El backend devuelve { url: "ruta/completa/imagen.jpg" }
         this.imagen.set(data.url);
         this.mostrarMensaje('success', 'Imagen subida exitosamente');
         this.uploadingImage.set(false);
       })
       .catch(error => {
-        console.error('Error:', error);
+        console.error('Error al subir imagen:', error);
         this.mostrarMensaje('error', 'Error al subir la imagen');
         this.uploadingImage.set(false);
         input.value = '';
