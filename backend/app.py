@@ -51,7 +51,18 @@ def create_app():
     # Ruta para servir archivos subidos
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
-        return send_from_directory('uploads', filename)
+        response = send_from_directory('uploads', filename)
+        origin = request.headers.get('Origin', '')
+        allowed_origins = Config.CORS_ORIGINS
+        if origin in allowed_origins:
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+        else:
+            # Si no hay origin específico, permitir acceso público a uploads
+            response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     
     # Health check
     @app.route('/api/health')

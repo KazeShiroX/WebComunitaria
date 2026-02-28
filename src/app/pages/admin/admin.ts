@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { NoticiasService } from '../../services/noticias.service';
+import { ApiConfig } from '../../services/api-config.service';
 import { Noticia } from '../../models/noticia.model';
+
 
 @Component({
   selector: 'app-admin',
@@ -16,6 +18,7 @@ export class Admin implements OnInit {
   authService = inject(AuthService);
   private noticiasService = inject(NoticiasService);
   private router = inject(Router);
+  private apiConfig = inject(ApiConfig);
 
   noticias = signal<Noticia[]>([]);
   categorias = this.noticiasService.getCategorias();
@@ -199,7 +202,7 @@ export class Admin implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch(`${window.location.origin}/api/upload`, {
+    fetch(`${this.apiConfig.baseUrl}/upload`, {
       method: 'POST',
       body: formData
     })

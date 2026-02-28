@@ -50,3 +50,7 @@ class Config:
     # --- SERVIDOR ---
     PORT = int(os.getenv('PORT', 8000))
     DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+    
+    # --- URL DEL BACKEND (para generar URLs de recursos) ---
+    # Usar variable de entorno en producción, o localhost en desarrollo
+    BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8000')
