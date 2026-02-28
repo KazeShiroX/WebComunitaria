@@ -18,21 +18,17 @@ def create_app():
     # Inicializar extensiones
     db.init_app(app)
     
-    # CORS simplificado
-    CORS(app, resources={r"/api/*": {
-        "origins": Config.CORS_ORIGINS,
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
-    }})
-    
-    @app.after_request
-    def add_cors_headers(response):
-        origin = request.headers.get('Origin', '')
-        if origin in Config.CORS_ORIGINS:
-            response.headers['Access-Control-Allow-Origin'] = origin
-            response.headers['Access-Control-Allow-Credentials'] = 'true'
-        return response
+    # Configurar CORS para todos los /api/* routes
+    # flask-cors maneja automáticamente preflight requests y headers
+    CORS(app, 
+         resources={r"/api/*": {
+             "origins": Config.CORS_ORIGINS,
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "allow_headers": ["Content-Type", "Authorization"],
+             "supports_credentials": True,
+             "max_age": 3600
+         }},
+         expose_headers=["Content-Type"])
     
     # Registrar blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -42,18 +38,7 @@ def create_app():
     # Ruta para servir archivos subidos
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
-        response = send_from_directory('uploads', filename)
-        origin = request.headers.get('Origin', '')
-        allowed_origins = Config.CORS_ORIGINS
-        if origin in allowed_origins:
-            response.headers['Access-Control-Allow-Origin'] = origin
-            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-            response.headers['Access-Control-Allow-Credentials'] = 'true'
-        else:
-            # Si no hay origin específico, permitir acceso público a uploads
-            response.headers['Access-Control-Allow-Origin'] = '*'
-        return response
+        return send_from_directory('uploads', filename)
     
     # Health check
     @app.route('/api/health')
@@ -63,7 +48,7 @@ def create_app():
     # Ruta raíz informativa
     @app.route('/')
     def index():
-        return {'message': 'Backend WebComunitaria funcionando v.1.0.0'}, 200
+        return {'message': 'Backend WebComunitaria funcionando v.1.0.1'}, 200
     
     # Crear tablas y carpeta de uploads si no existen
     with app.app_context():
