@@ -72,7 +72,7 @@ def create_app():
     # Ruta raíz informativa
     @app.route('/')
     def index():
-        return {'message': 'Backend WebComunitaria funcionando.'}, 200
+        return {'message': 'Backend WebComunitaria funcionando v.1.0.0'}, 200
     
     # Crear tablas y carpeta de uploads si no existen
     with app.app_context():
