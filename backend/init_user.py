@@ -21,7 +21,7 @@ def init_admin_user():
         admin = Usuario.query.filter_by(email='admin@rios.com').first()
         
         if admin:
-            print("✅ El usuario administrador ya existe")
+            print("✅ El usuario administrador ya existe y se realizaron estos cambios")
             print(f"   Email: {admin.email}")
             print(f"   Nombre: {admin.nombre}")
             return
