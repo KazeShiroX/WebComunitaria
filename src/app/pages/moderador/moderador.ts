@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -9,14 +9,15 @@ import { NoticiasService } from '../../services/noticias.service';
 import { ComentariosService, Comentario } from '../../services/comentarios.service';
 import { ApiConfig } from '../../services/api-config.service';
 import { Noticia } from '../../models/noticia.model';
+import { TiempoRelativoPipe } from '../../pipes/tiempo-relativo.pipe';
 
 @Component({
     selector: 'app-moderador',
-    imports: [FormsModule, DatePipe],
+    imports: [FormsModule, DatePipe, TiempoRelativoPipe],
     templateUrl: './moderador.html',
     styleUrl: './moderador.css',
 })
-export class Moderador implements OnInit {
+export class Moderador implements OnInit, OnDestroy {
     authService = inject(AuthService);
     private noticiasService = inject(NoticiasService);
     private comentariosService = inject(ComentariosService);
@@ -43,6 +44,10 @@ export class Moderador implements OnInit {
     comentariosRecientes = signal<(Comentario & { noticia_titulo?: string })[]>([]);
     cargandoComentarios = signal(false);
 
+    // Tick para forzar actualización visual
+    tick = signal(0);
+    private timer: any;
+
     mensaje = signal<{ tipo: 'success' | 'error'; texto: string } | null>(null);
 
     constructor() {
@@ -53,6 +58,11 @@ export class Moderador implements OnInit {
 
     ngOnInit() {
         this.cargarNoticias();
+        this.timer = setInterval(() => this.tick.update(v => v + 1), 60000);
+    }
+
+    ngOnDestroy() {
+        if (this.timer) clearInterval(this.timer);
     }
 
     irATab(tab: 'noticias' | 'comentarios') {

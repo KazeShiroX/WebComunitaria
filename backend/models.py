@@ -56,6 +56,7 @@ class Noticia(db.Model):
     # Relaciones
     comentarios = db.relationship('Comentario', backref='noticia_obj', lazy=True, cascade='all, delete-orphan')
     reacciones = db.relationship('Reaccion', backref='noticia_obj', lazy=True, cascade='all, delete-orphan')
+    notificaciones = db.relationship('Notificacion', backref='noticia_notif_obj', lazy=True, cascade='all, delete-orphan')
     
     def to_dict(self):
         """Convertir a diccionario"""

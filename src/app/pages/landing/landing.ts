@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NoticiasService } from '../../services/noticias.service';
 import { Noticia } from '../../models/noticia.model';
@@ -10,8 +10,12 @@ import { TiempoRelativoPipe } from '../../pipes/tiempo-relativo.pipe';
     templateUrl: './landing.html',
     styleUrl: './landing.css'
 })
-export class Landing implements OnInit {
+export class Landing implements OnInit, OnDestroy {
     private noticiasService = inject(NoticiasService);
+
+    // Contador para forzar re-evaluación del template (y de los pipes impuros)
+    tick = signal(0);
+    private timer: any;
 
     destacadas = signal<Noticia[]>([]);
     recientes = signal<Noticia[]>([]);
@@ -54,7 +58,18 @@ export class Landing implements OnInit {
             this.destacadas.set(todas.slice(0, 3));
             this.recientes.set(todas.slice(3, 7));
             this.loading.set(false);
+
+            // Iniciar el reloj para forzar detección de cambios cada minuto
+            this.timer = setInterval(() => {
+                this.tick.update(v => v + 1);
+            }, 60000);
         });
+    }
+
+    ngOnDestroy() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
     }
 
     getImageUrl(path: string) {
