@@ -1,5 +1,4 @@
 <div class="home-wrapper">
-  <!-- Dreamy Sky Pink Glow -->
   <div class="dreamy-background"></div>
 
   <div class="home-container">
@@ -18,20 +17,17 @@
     <section class="categorias">
       @for (categoria of categorias(); track categoria) {
       <button class="categoria-btn" [class.active]="categoriaActiva() === categoria"
-        (click)="filtrarPorCategoria(categoria)">
-        {{ categoria }}
-      </button>
+        (click)="filtrarPorCategoria(categoria)">{{ categoria }}</button>
       }
     </section>
 
     <section class="noticias-grid">
       @for (noticia of noticiasPaginadas().items; track noticia.id) {
-      <article class="noticia-card" (click)="verNoticia(noticia)" style="cursor: pointer;">
+      <article class="noticia-card" (click)="verNoticia(noticia)" style="cursor:pointer;">
         <img [src]="getImageUrl(noticia.imagen)" [alt]="noticia.titulo" class="noticia-imagen" />
         <div class="noticia-content">
-          <span class="noticia-categoria" [style.color]="getCategoriaColor(noticia.categoria)">
-            {{ noticia.categoria }}
-          </span>
+          <span class="noticia-categoria" [style.color]="getCategoriaColor(noticia.categoria)">{{ noticia.categoria
+            }}</span>
           <h3 class="noticia-titulo">{{ noticia.titulo }}</h3>
           <p class="noticia-descripcion">{{ noticia.descripcion }}</p>
         </div>
@@ -41,95 +37,199 @@
 
     @if (noticiasPaginadas().totalPaginas > 1) {
     <section class="paginacion">
-      <button class="pag-btn" [disabled]="paginaActual() === 1" (click)="irAPagina(paginaActual() - 1)">
-        ‹
-      </button>
-
+      <button class="pag-btn" [disabled]="paginaActual() === 1" (click)="irAPagina(paginaActual() - 1)">‹</button>
       @for (pagina of getPaginas(); track pagina) {
-      @if (pagina === '...') {
-      <span class="pag-ellipsis">...</span>
-      } @else {
-      <button class="pag-btn" [class.active]="paginaActual() === pagina" (click)="irAPagina(+pagina)">
-        {{ pagina }}
-      </button>
+      @if (pagina === '...') { <span class="pag-ellipsis">...</span> }
+      @else { <button class="pag-btn" [class.active]="paginaActual() === pagina" (click)="irAPagina(+pagina)">{{ pagina
+        }}</button> }
       }
-      }
-
       <button class="pag-btn" [disabled]="paginaActual() === noticiasPaginadas().totalPaginas"
-        (click)="irAPagina(paginaActual() + 1)">
-        ›
-      </button>
+        (click)="irAPagina(paginaActual() + 1)">›</button>
     </section>
     }
   </div>
 </div>
 
-<!-- MODAL DE DETALLE -->
+<!-- ═══ MODAL DETALLE ══════════════════════════════════════════════════════ -->
 @if (showModal() && noticiaSeleccionada()) {
 <div
-  style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;"
+  style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;"
   (click)="cerrarModal()">
-
   <div (click)="$event.stopPropagation()"
-    style="background: white; border-radius: 20px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; position: relative;">
+    style="background:white;border-radius:20px;width:100%;max-width:900px;margin:auto;">
 
-    <!-- Imagen de portada -->
-    <div style="position: relative; width: 100%; height: 400px; overflow: hidden; border-radius: 20px 20px 0 0;">
-      <img [src]="getImageUrl(noticiaSeleccionada()?.imagen)" [alt]="noticiaSeleccionada()!.titulo"
-        style="width: 100%; height: 100%; object-fit: cover;">
-
-      <!-- Botón cerrar -->
+    <!-- Imagen portada -->
+    <div style="position:relative;width:100%;height:400px;overflow:hidden;border-radius:20px 20px 0 0;">
+      <img [src]="getImageUrl(noticiaSeleccionada()!.imagen)" [alt]="noticiaSeleccionada()!.titulo"
+        style="width:100%;height:100%;object-fit:cover;">
       <button (click)="cerrarModal()" type="button"
-        style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.95); border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: bold; color: #333; display: flex; align-items: center; justify-content: center;">
-        ✕
-      </button>
-
-      <!-- Categoría badge -->
-      <div style="position: absolute; bottom: 20px; left: 30px;">
+        style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.95);border:none;width:45px;height:45px;border-radius:50%;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-weight:bold;color:#333;display:flex;align-items:center;justify-content:center;">✕</button>
+      <div style="position:absolute;bottom:20px;left:30px;">
         <span [style.background-color]="getCategoriaColor(noticiaSeleccionada()!.categoria)"
-          style="padding: 10px 20px; border-radius: 25px; color: white; font-weight: bold; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-          {{ noticiaSeleccionada()!.categoria }}
-        </span>
+          style="padding:10px 20px;border-radius:25px;color:white;font-weight:bold;font-size:14px;">{{
+          noticiaSeleccionada()!.categoria }}</span>
       </div>
     </div>
 
     <!-- Contenido -->
-    <div style="padding: 40px;">
-      <!-- Título -->
-      <h1 style="font-size: 36px; font-weight: 800; color: #1a1a1a; margin: 0 0 20px 0; line-height: 1.2;">
-        {{ noticiaSeleccionada()!.titulo }}
-      </h1>
+    <div style="padding:40px;">
+      <h1 style="font-size:36px;font-weight:800;color:#1a1a1a;margin:0 0 20px;line-height:1.2;">{{
+        noticiaSeleccionada()!.titulo }}</h1>
 
-      <!-- Meta información -->
-      <div
-        style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
-        <div style="display: flex; align-items: center; gap: 8px; color: #666;">
-          <span style="font-size: 20px;"><i class="bi bi-calendar"></i></span>
-          <span style="font-size: 14px; font-weight: 500;">{{ noticiaSeleccionada()!.fecha | date:'dd/MM/yyyy' }}</span>
+      <div style="display:flex;gap:20px;margin-bottom:30px;padding-bottom:20px;border-bottom:2px solid #f0f0f0;">
+        <div style="display:flex;align-items:center;gap:8px;color:#666;">
+          <i class="bi bi-calendar"></i>
+          <span style="font-size:14px;">{{ noticiaSeleccionada()!.fecha | date:'dd/MM/yyyy' }}</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px; color: #666;">
-          <span style="font-size: 20px;"><i class="bi bi-person"></i></span>
-          <span style="font-size: 14px; font-weight: 500;">{{ noticiaSeleccionada()!.autor }}</span>
+        <div style="display:flex;align-items:center;gap:8px;color:#666;">
+          <i class="bi bi-person"></i>
+          <span style="font-size:14px;">{{ noticiaSeleccionada()!.autor }}</span>
         </div>
       </div>
 
-      <!-- Descripción -->
-      <div
-        style="background: #f8f9fa; padding: 20px; border-left: 4px solid #2563eb; border-radius: 8px; margin-bottom: 30px;">
-        <p style="font-size: 18px; font-weight: 500; color: #374151; margin: 0; line-height: 1.6;">
-          {{ noticiaSeleccionada()!.descripcion }}
-        </p>
+      <div style="background:#f8f9fa;padding:20px;border-left:4px solid #2563eb;border-radius:8px;margin-bottom:30px;">
+        <p style="font-size:18px;font-weight:500;color:#374151;margin:0;line-height:1.6;">{{
+          noticiaSeleccionada()!.descripcion }}</p>
       </div>
 
-      <!-- Contenido completo -->
       @if (noticiaSeleccionada()!.contenido) {
-      <div style="font-size: 17px; line-height: 1.8; color: #333; white-space: pre-wrap;">
-        {{ noticiaSeleccionada()!.contenido }}
-      </div>
+      <div style="font-size:17px;line-height:1.8;color:#333;white-space:pre-wrap;margin-bottom:30px;">{{
+        noticiaSeleccionada()!.contenido }}</div>
       }
+
+      <!-- ─── REACCIONES ────────────────────────────────────────── -->
+      <div style="border-top:2px solid #f0f0f0;padding-top:24px;margin-bottom:32px;">
+        <h3
+          style="font-size:15px;color:#888;margin:0 0 18px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">
+          ¿Qué te pareció?</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          @for (emoji of emojis; track emoji.tipo) {
+          <button (click)="authService.isLoggedIn() ? reaccionar(emoji.tipo) : irALogin()"
+            [title]="authService.isLoggedIn() ? emoji.label : 'Inicia sesión para reaccionar'" class="reaction-btn"
+            [class.reaction-active]="miReaccion() === emoji.tipo" [attr.data-tipo]="emoji.tipo"
+            [style.opacity]="!authService.isLoggedIn() ? '0.5' : '1'">
+            <span class="reaction-emoji">{{ emoji.emoji }}</span>
+            @if (getReaccionConteo(emoji.tipo) > 0) {
+            <span class="reaction-count">{{ getReaccionConteo(emoji.tipo) }}</span>
+            }
+            <span class="reaction-label">{{ emoji.label }}</span>
+          </button>
+          }
+        </div>
+        @if (!authService.isLoggedIn()) {
+        <p style="margin-top:12px;font-size:13px;color:#9ca3af;">
+          <span (click)="irALogin()" style="color:#2563eb;cursor:pointer;font-weight:600;">Inicia sesión</span> para
+          reaccionar.
+        </p>
+        }
+      </div>
+
+      <!-- ─── COMENTARIOS ───────────────────────────────────────── -->
+      <div style="border-top:2px solid #f0f0f0;padding-top:24px;">
+        <h3 style="font-size:18px;font-weight:700;color:#1a1a1a;margin:0 0 20px;">
+          <i class="bi bi-chat-dots"></i> Comentarios ({{ totalComentarios() }})
+        </h3>
+
+        @if (authService.isLoggedIn()) {
+        <div style="margin-bottom:24px;display:flex;gap:12px;align-items:flex-start;">
+          <!-- Avatar del usuario actual -->
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+            @if (getAvatarUrl(authService.usuario()?.avatar)) {
+            <img [src]="getAvatarUrl(authService.usuario()?.avatar)" style="width:100%;height:100%;object-fit:cover;">
+            } @else {
+            <div
+              style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:18px;">
+              {{ authService.usuario()?.nombre?.charAt(0)?.toUpperCase() }}
+            </div>
+            }
+          </div>
+          <div style="flex:1;">
+            <textarea [ngModel]="nuevoComentario()" (ngModelChange)="nuevoComentario.set($event)"
+              placeholder="Escribe tu comentario..." rows="3"
+              style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:12px;font-size:15px;font-family:inherit;resize:vertical;box-sizing:border-box;">
+            </textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+              <button (click)="enviarComentario()" [disabled]="enviandoComentario() || !nuevoComentario().trim()"
+                style="padding:10px 20px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;"
+                [style.opacity]="enviandoComentario() || !nuevoComentario().trim() ? '0.6' : '1'">
+                {{ enviandoComentario() ? 'Enviando...' : 'Comentar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        } @else {
+        <div
+          style="background:#f8f9fa;border:2px dashed #d1d5db;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;">
+          <p style="color:#6b7280;margin:0 0 12px;font-size:15px;">¿Quieres comentar esta noticia?</p>
+          <button (click)="irALogin()"
+            style="padding:10px 24px;background:#2563eb;color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">
+            Inicia sesión para comentar
+          </button>
+        </div>
+        }
+
+        <!-- Lista de comentarios -->
+        @if (comentarios().length === 0) {
+        <p style="color:#9ca3af;text-align:center;font-size:15px;padding:20px 0;">
+          No hay comentarios aún. ¡Sé el primero en comentar!
+        </p>
+        } @else {
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          @for (comentario of comentarios(); track comentario.id) {
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <!-- Avatar del comentarista -->
+            <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+              @if (getAvatarUrl(comentario.usuario_avatar)) {
+              <img [src]="getAvatarUrl(comentario.usuario_avatar)" style="width:100%;height:100%;object-fit:cover;">
+              } @else {
+              <div
+                style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:16px;">
+                {{ comentario.usuario_nombre.charAt(0).toUpperCase() }}
+              </div>
+              }
+            </div>
+            <!-- Cuerpo del comentario -->
+            <div style="flex:1;background:#f8f9fa;border-radius:12px;padding:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-weight:700;font-size:14px;color:#1a1a1a;">{{ comentario.usuario_nombre }}</span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:12px;color:#9ca3af;" [title]="comentario.fecha | date:'dd/MM/yyyy HH:mm'">
+                    {{ comentario.fecha | tiempoRelativo }}
+                  </span>
+                  @if (esPropio(comentario) || authService.isPowerUser()) {
+                  <button (click)="eliminarComentario(comentario.id)" title="Eliminar"
+                    style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:14px;padding:2px 6px;border-radius:4px;">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                  }
+                </div>
+              </div>
+              <p style="margin:0;font-size:15px;color:#374151;line-height:1.5;">{{ comentario.texto }}</p>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- Paginador de comentarios -->
+        @if (totalPaginasComentarios() > 1) {
+        <div
+          style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;">
+          <button (click)="cambiarPaginaComentarios(paginaComentarios() - 1)" [disabled]="paginaComentarios() === 1"
+            style="padding:6px 14px;border:2px solid #e5e7eb;border-radius:8px;background:white;cursor:pointer;font-weight:600;font-size:18px;"
+            [style.opacity]="paginaComentarios() === 1 ? '0.4' : '1'">‹</button>
+          <span style="font-size:14px;color:#6b7280;">
+            Pág. {{ paginaComentarios() }} de {{ totalPaginasComentarios() }}
+          </span>
+          <button (click)="cambiarPaginaComentarios(paginaComentarios() + 1)"
+            [disabled]="paginaComentarios() === totalPaginasComentarios()"
+            style="padding:6px 14px;border:2px solid #e5e7eb;border-radius:8px;background:white;cursor:pointer;font-weight:600;font-size:18px;"
+            [style.opacity]="paginaComentarios() === totalPaginasComentarios() ? '0.4' : '1'">›</button>
+        </div>
+        }
+        }
+      </div>
+      <!-- fin comentarios -->
     </div>
-
   </div>
-
 </div>
 }

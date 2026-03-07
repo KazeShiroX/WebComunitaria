@@ -2,11 +2,13 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { catchError, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { NoticiasService } from '../../services/noticias.service';
 import { ApiConfig } from '../../services/api-config.service';
 import { Noticia } from '../../models/noticia.model';
-
+import { Usuario } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-admin',
@@ -19,9 +21,18 @@ export class Admin implements OnInit {
   private noticiasService = inject(NoticiasService);
   private router = inject(Router);
   private apiConfig = inject(ApiConfig);
+  private http = inject(HttpClient);
 
   noticias = signal<Noticia[]>([]);
   categorias = this.noticiasService.getCategorias();
+
+  // ─── Tab activo ─────────────────────────────────────────────
+  tabActivo = signal<'noticias' | 'usuarios'>('noticias');
+
+  // ─── Gestión de usuarios ─────────────────────────────────────
+  usuarios = signal<Usuario[]>([]);
+  cargandoUsuarios = signal(false);
+  cambiandoRol = signal<number | null>(null);  // ID del usuario en proceso
 
   showForm = signal(false);
   editingNoticia = signal<Noticia | null>(null);
@@ -38,7 +49,6 @@ export class Admin implements OnInit {
   mensaje = signal<{ tipo: 'success' | 'error', texto: string } | null>(null);
 
   constructor() {
-    // Verificar autenticación
     if (!this.authService.isAdmin()) {
       this.router.navigate(['/login']);
     }
@@ -46,6 +56,52 @@ export class Admin implements OnInit {
 
   ngOnInit() {
     this.cargarNoticias();
+  }
+
+  irATab(tab: 'noticias' | 'usuarios') {
+    this.tabActivo.set(tab);
+    if (tab === 'usuarios' && this.usuarios().length === 0) {
+      this.cargarUsuarios();
+    }
+  }
+
+  cargarUsuarios() {
+    this.cargandoUsuarios.set(true);
+    this.http.get<{ items: Usuario[] }>(`${this.apiConfig.baseUrl}/auth/usuarios`)
+      .pipe(catchError(() => of({ items: [] })))
+      .subscribe(res => {
+        this.usuarios.set(res.items);
+        this.cargandoUsuarios.set(false);
+      });
+  }
+
+  cambiarRol(usuario: Usuario, nuevoRol: string) {
+    if (nuevoRol === usuario.rol) return;
+
+    this.cambiandoRol.set(usuario.id);
+    this.http.patch<Usuario>(
+      `${this.apiConfig.baseUrl}/auth/usuarios/${usuario.id}/rol`,
+      { rol: nuevoRol }
+    ).pipe(catchError(() => of(null)))
+      .subscribe(actualizado => {
+        if (actualizado) {
+          this.usuarios.update(lista =>
+            lista.map(u => u.id === actualizado.id ? actualizado : u)
+          );
+          this.mostrarMensaje('success', `Rol de ${actualizado.nombre} cambiado a "${actualizado.rol}"`);
+        } else {
+          this.mostrarMensaje('error', 'Error al cambiar el rol');
+        }
+        this.cambiandoRol.set(null);
+      });
+  }
+
+  getRolColor(rol: string): string {
+    return { admin: '#dc2626', moderador: '#d97706', usuario: '#059669' }[rol] || '#666';
+  }
+
+  getRolLabel(rol: string): string {
+    return { admin: '⚙️ Admin', moderador: '🛡️ Moderador', usuario: '👤 Usuario' }[rol] || rol;
   }
 
   getImageUrl(path: string): string {
@@ -105,7 +161,7 @@ export class Admin implements OnInit {
     const noticiaData = {
       titulo: this.titulo(),
       descripcion: this.descripcion(),
-      contenido: this.contenido() || this.descripcion(),
+      contenido: this.contenido() || '',
       categoria: this.categoria(),
       imagen: this.imagen() || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=250&fit=crop',
       fecha: new Date(),
@@ -172,7 +228,8 @@ export class Admin implements OnInit {
       'Noticias Locales': '#2563eb',
       'Deportes': '#dc2626',
       'Cultura': '#7c3aed',
-      'Comunidad': '#059669'
+      'Comunidad': '#059669',
+      'Brigadistas': '#d97706'
     };
     return colores[categoria] || '#666';
   }

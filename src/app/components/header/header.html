@@ -8,49 +8,114 @@
     <nav class="nav-menu">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
       <a routerLink="/noticias" routerLinkActive="active">Noticias</a>
-      <a href="#">Eventos</a>
+      <a routerLink="/eventos" routerLinkActive="active">Eventos</a>
       <a href="#">Servicios</a>
       <a routerLink="/contact" routerLinkActive="active">Contacto</a>
     </nav>
 
     <div class="header-actions">
       @if (authService.isLoggedIn()) {
-      <button class="notification-btn">
-        <i class="bi bi-bell"></i>
-      </button>
-      <div class="user-menu">
-        <div class="user-avatar-placeholder">
-          {{ userInitial() }}
-        </div>
-        <div class="dropdown-menu">
-          @if (authService.isAdmin()) {
-          <a routerLink="/admin">Panel Admin</a>
+
+      <!-- Notificaciones -->
+      <div class="notif-wrapper">
+        <button class="notification-btn" (click)="toggleNotif()" title="Notificaciones">
+          <i class="bi bi-bell"></i>
+          @if (notifService.noLeidas() > 0) {
+          <span class="notif-badge">{{ notifService.noLeidas() > 99 ? '99+' : notifService.noLeidas() }}</span>
           }
-          <button (click)="logout()">Cerrar Sesión</button>
+        </button>
+
+        @if (notifOpen()) {
+        <div class="notif-dropdown" (click)="$event.stopPropagation()">
+          <div class="notif-header">
+            <span>Notificaciones</span>
+            @if (notifService.noLeidas() > 0) {
+            <button class="notif-leer-todas" (click)="marcarTodas()">Marcar todas</button>
+            }
+          </div>
+          @if (notifService.notificaciones().length === 0) {
+          <div class="notif-empty">No tienes notificaciones</div>
+          } @else {
+          <div class="notif-list">
+            @for (notif of notifService.notificaciones(); track notif.id) {
+            <div class="notif-item" [class.no-leida]="!notif.leida" (click)="marcarLeida(notif)">
+              <div class="notif-icon"><i class="bi bi-newspaper"></i></div>
+              <div class="notif-body">
+                <p class="notif-mensaje">{{ notif.mensaje }}</p>
+                <span class="notif-tiempo">{{ notif.fecha | tiempoRelativo }}</span>
+              </div>
+              @if (!notif.leida) { <div class="notif-dot"></div> }
+            </div>
+            }
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Usuario / Perfil -->
+      <div class="user-menu">
+        @if (userAvatar()) {
+        <img [src]="userAvatar()" alt="Avatar" class="user-avatar-img" />
+        } @else {
+        <div class="user-avatar-placeholder">{{ userInitial() }}</div>
+        }
+        <div class="dropdown-menu">
+          <a routerLink="/perfil">
+            <i class="bi bi-person"></i> Mi Perfil
+          </a>
+          @if (authService.isModerador()) {
+          <a routerLink="/moderador">
+            <i class="bi bi-shield-check"></i> Panel Moderador
+          </a>
+          }
+          @if (authService.isAdmin()) {
+          <a routerLink="/moderador">
+            <i class="bi bi-shield-check"></i> Panel Moderador
+          </a>
+          <a routerLink="/admin">
+            <i class="bi bi-gear"></i> Panel Admin
+          </a>
+          }
+          <button (click)="logout()">
+            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+          </button>
         </div>
       </div>
+
       } @else {
       <a routerLink="/login" class="login-btn">Iniciar Sesión</a>
       }
     </div>
 
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
   </div>
 
   @if (mobileMenuOpen()) {
-  <div class="mobile-menu">
-    <a routerLink="/" (click)="toggleMobileMenu()">Inicio</a>
-    <a routerLink="/noticias" (click)="toggleMobileMenu()">Noticias</a>
+  <div class="mobile-menu" (click)="mobileMenuOpen.set(false)">
+    <a routerLink="/">Inicio</a>
+    <a routerLink="/noticias">Noticias</a>
     <a href="#">Eventos</a>
     <a href="#">Servicios</a>
-    <a href="#">Contacto</a>
-    @if (!authService.isLoggedIn()) {
-    <a routerLink="/login" (click)="toggleMobileMenu()">Iniciar Sesión</a>
+    <a routerLink="/contact">Contacto</a>
+    @if (authService.isLoggedIn()) {
+    <a routerLink="/perfil">Mi Perfil</a>
+    @if (authService.isPowerUser()) {
+    <a routerLink="/moderador">Panel Moderador</a>
+    }
+    @if (authService.isAdmin()) {
+    <a routerLink="/admin">Panel Admin</a>
+    }
+    <button (click)="logout()">Cerrar Sesión</button>
+    } @else {
+    <a routerLink="/login">Iniciar Sesión</a>
     }
   </div>
   }
 </header>
+
+@if (notifOpen()) {
+<div style="position:fixed;inset:0;z-index:998;" (click)="notifOpen.set(false)"></div>
+}

@@ -1,0 +1,95 @@
+<div class="landing">
+
+    <!-- ══ HERO ══════════════════════════════════════════════════════ -->
+    <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <span class="hero-eyebrow">Portal Comunitario</span>
+            <h1>Juan José Ríos, <br>Sinaloa</h1>
+            <p>Tu fuente de información local: noticias, eventos y servicios de nuestra comunidad.</p>
+            <div class="hero-actions">
+                <a routerLink="/noticias" class="btn-hero-primary">
+                    <i class="bi bi-newspaper"></i> Ver todas las noticias
+                </a>
+                <a routerLink="/contact" class="btn-hero-secondary">
+                    <i class="bi bi-envelope"></i> Contacto
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ NOTICIAS DESTACADAS ══════════════════════════════════════ -->
+    <section class="section">
+        <div class="section-header">
+            <h2><i class="bi bi-star-fill"></i> Noticias Destacadas</h2>
+            <a routerLink="/noticias" class="ver-mas">Ver todas <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        @if (loading()) {
+        <div class="skeleton-grid">
+            @for (i of [1,2,3]; track i) { <div class="skeleton-card"></div> }
+        </div>
+        } @else {
+        <div class="destacadas-grid">
+            @for (noticia of destacadas(); track noticia.id) {
+            <article class="destacada-card" routerLink="/noticias">
+                <div class="card-img-wrapper">
+                    <img [src]="getImageUrl(noticia.imagen)" [alt]="noticia.titulo" />
+                    <span class="card-cat" [style.background-color]="getCategoriaColor(noticia.categoria)">
+                        {{ noticia.categoria }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h3>{{ noticia.titulo }}</h3>
+                    <p>{{ noticia.descripcion }}</p>
+                    <div class="card-meta">
+                        <span><i class="bi bi-person"></i> {{ noticia.autor }}</span>
+                        <span><i class="bi bi-clock"></i> {{ noticia.fecha | tiempoRelativo }}</span>
+                    </div>
+                </div>
+            </article>
+            }
+        </div>
+        }
+    </section>
+
+
+
+    <!-- ══ NOTICIAS RECIENTES ════════════════════════════════════ -->
+    @if (!loading() && recientes().length > 0) {
+    <section class="section">
+        <div class="section-header">
+            <h2><i class="bi bi-clock-history"></i> Más Recientes</h2>
+            <a routerLink="/noticias" class="ver-mas">Ver todas <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="recientes-lista">
+            @for (noticia of recientes(); track noticia.id) {
+            <article class="reciente-item" routerLink="/noticias">
+                <img [src]="getImageUrl(noticia.imagen)" [alt]="noticia.titulo" class="reciente-img" />
+                <div class="reciente-body">
+                    <span class="reciente-cat" [style.color]="getCategoriaColor(noticia.categoria)">
+                        {{ noticia.categoria }}
+                    </span>
+                    <h4>{{ noticia.titulo }}</h4>
+                    <span class="reciente-tiempo"><i class="bi bi-clock"></i> {{ noticia.fecha | tiempoRelativo
+                        }}</span>
+                </div>
+                <i class="bi bi-chevron-right reciente-arrow"></i>
+            </article>
+            }
+        </div>
+    </section>
+    }
+
+    <!-- ══ FOOTER CTA ════════════════════════════════════════════ -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>¿Tienes algo que compartir?</h2>
+            <p>Contáctanos para enviar noticias, reportes o sugerencias de tu colonia.</p>
+            <a routerLink="/contact" class="btn-hero-primary">
+                <i class="bi bi-send"></i> Escríbenos
+            </a>
+        </div>
+    </section>
+
+</div>

@@ -240,3 +240,141 @@
   pointer-events: none;
   /* Ensure clicks pass through */
 }
+
+/* ─── REACCIONES ANIMADAS ───────────────────────────────────────────────── */
+
+@keyframes reaction-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.35) rotate(-8deg);
+  }
+
+  65% {
+    transform: scale(0.9) rotate(5deg);
+  }
+
+  100% {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes reaction-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  40% {
+    transform: translateY(-6px) scale(1.15);
+  }
+
+  70% {
+    transform: translateY(-2px) scale(1.05);
+  }
+}
+
+.reaction-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 16px 8px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #f4f4f5;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  position: relative;
+  min-width: 62px;
+}
+
+/* Color por tipo usando data attribute */
+.reaction-btn[data-tipo="like"] {
+  --c: #3b82f6;
+  --bg: #eff6ff;
+  --glow: rgba(59, 130, 246, 0.35);
+}
+
+.reaction-btn[data-tipo="love"] {
+  --c: #ec4899;
+  --bg: #fdf2f8;
+  --glow: rgba(236, 72, 153, 0.35);
+}
+
+.reaction-btn[data-tipo="wow"] {
+  --c: #f59e0b;
+  --bg: #fffbeb;
+  --glow: rgba(245, 158, 11, 0.35);
+}
+
+.reaction-btn[data-tipo="sad"] {
+  --c: #64748b;
+  --bg: #f1f5f9;
+  --glow: rgba(100, 116, 139, 0.3);
+}
+
+.reaction-btn[data-tipo="angry"] {
+  --c: #ef4444;
+  --bg: #fef2f2;
+  --glow: rgba(239, 68, 68, 0.35);
+}
+
+/* Hover */
+.reaction-btn:hover {
+  background: var(--bg);
+  border-color: var(--c);
+  box-shadow: 0 4px 16px var(--glow);
+  transform: translateY(-2px);
+}
+
+.reaction-btn:hover .reaction-emoji {
+  animation: reaction-bounce 0.5s ease;
+}
+
+/* Seleccionado (activo) */
+.reaction-btn.reaction-active {
+  background: var(--bg);
+  border-color: var(--c);
+  box-shadow: 0 0 0 3px var(--glow);
+  transform: scale(1.12);
+}
+
+.reaction-btn.reaction-active .reaction-emoji {
+  animation: reaction-pop 0.4s cubic-bezier(.36, .07, .19, .97);
+  filter: drop-shadow(0 2px 6px var(--glow));
+}
+
+/* Emoji grande */
+.reaction-emoji {
+  font-size: 28px;
+  line-height: 1;
+  transition: filter 0.2s, transform 0.2s;
+  display: block;
+}
+
+/* Contador */
+.reaction-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c);
+  line-height: 1;
+}
+
+/* Etiqueta pequeña debajo */
+.reaction-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #9ca3af;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.reaction-btn:hover .reaction-label,
+.reaction-btn.reaction-active .reaction-label {
+  color: var(--c);
+  font-weight: 700;
+}

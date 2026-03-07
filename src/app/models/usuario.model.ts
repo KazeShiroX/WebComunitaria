@@ -3,7 +3,7 @@ export interface Usuario {
   nombre: string;
   email: string;
   password?: string;
-  rol: 'admin' | 'usuario';
+  rol: 'admin' | 'moderador' | 'usuario';
   avatar?: string;
 }
 

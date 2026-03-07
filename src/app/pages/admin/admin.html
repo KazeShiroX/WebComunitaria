@@ -2,10 +2,28 @@
   <div class="admin-header">
     <div>
       <h1>Panel de Administración</h1>
-      <p>Gestiona las noticias de la comunidad</p>
+      <p>Gestiona las noticias y usuarios de la comunidad</p>
     </div>
+    @if (tabActivo() === 'noticias') {
     <button class="btn-primary" (click)="openForm()">
-      + Nueva Noticia
+      <i class="bi bi-plus-lg"></i> Nueva Noticia
+    </button>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid #f0f0f0;padding-bottom:0;">
+    <button (click)="irATab('noticias')"
+      style="padding:10px 20px;border:none;background:none;cursor:pointer;font-size:15px;font-weight:600;border-bottom:3px solid transparent;transition:all 0.2s;margin-bottom:-2px;"
+      [style.border-bottom-color]="tabActivo() === 'noticias' ? '#2563eb' : 'transparent'"
+      [style.color]="tabActivo() === 'noticias' ? '#2563eb' : '#6b7280'">
+      <i class="bi bi-newspaper"></i> Noticias ({{ noticias().length }})
+    </button>
+    <button (click)="irATab('usuarios')"
+      style="padding:10px 20px;border:none;background:none;cursor:pointer;font-size:15px;font-weight:600;border-bottom:3px solid transparent;transition:all 0.2s;margin-bottom:-2px;"
+      [style.border-bottom-color]="tabActivo() === 'usuarios' ? '#2563eb' : 'transparent'"
+      [style.color]="tabActivo() === 'usuarios' ? '#2563eb' : '#6b7280'">
+      <i class="bi bi-people"></i> Usuarios ({{ usuarios().length }})
     </button>
   </div>
 
@@ -15,6 +33,82 @@
   </div>
   }
 
+  <!-- ─── TAB: USUARIOS ──────────────────────────────────────────────── -->
+  @if (tabActivo() === 'usuarios') {
+  <div>
+    @if (cargandoUsuarios()) {
+    <p style="text-align:center;color:#9ca3af;padding:40px;">Cargando usuarios...</p>
+    } @else {
+    <table
+      style="width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <thead>
+        <tr style="background:#f8f9fa;">
+          <th
+            style="padding:14px 18px;text-align:left;font-size:13px;font-weight:700;color:#374151;border-bottom:1px solid #e5e7eb;">
+            Usuario</th>
+          <th
+            style="padding:14px 18px;text-align:left;font-size:13px;font-weight:700;color:#374151;border-bottom:1px solid #e5e7eb;">
+            Email</th>
+          <th
+            style="padding:14px 18px;text-align:left;font-size:13px;font-weight:700;color:#374151;border-bottom:1px solid #e5e7eb;">
+            Rol Actual</th>
+          <th
+            style="padding:14px 18px;text-align:left;font-size:13px;font-weight:700;color:#374151;border-bottom:1px solid #e5e7eb;">
+            Cambiar Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of usuarios(); track u.id) {
+        <tr style="border-bottom:1px solid #f3f4f6;" [style.background]="cambiandoRol() === u.id ? '#fffbeb' : 'white'">
+          <td style="padding:14px 18px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div
+                style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0;">
+                {{ u.nombre.charAt(0).toUpperCase() }}
+              </div>
+              <span style="font-weight:600;color:#1a1a1a;">{{ u.nombre }}</span>
+            </div>
+          </td>
+          <td style="padding:14px 18px;color:#6b7280;font-size:14px;">{{ u.email }}</td>
+          <td style="padding:14px 18px;">
+            <span style="padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;color:white;"
+              [style.background-color]="getRolColor(u.rol)">
+              {{ getRolLabel(u.rol) }}
+            </span>
+          </td>
+          <td style="padding:14px 18px;">
+            @if (u.id === authService.usuario()?.id) {
+            <span style="font-size:12px;color:#9ca3af;font-style:italic;">Tu cuenta</span>
+            } @else if (u.rol === 'admin') {
+            <span style="font-size:12px;color:#9ca3af;font-style:italic;">Administrador</span>
+            } @else if (cambiandoRol() === u.id) {
+            <span style="font-size:13px;color:#d97706;"><i class="bi bi-arrow-clockwise"></i> Actualizando...</span>
+            } @else {
+            <div style="display:flex;gap:6px;">
+              @if (u.rol !== 'moderador') {
+              <button (click)="cambiarRol(u, 'moderador')"
+                style="padding:6px 12px;background:#d97706;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-shield-check"></i> Hacer Moderador
+              </button>
+              } @else {
+              <button (click)="cambiarRol(u, 'usuario')"
+                style="padding:6px 12px;background:#6b7280;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-person-dash"></i> Quitar Moderador
+              </button>
+              }
+            </div>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    }
+  </div>
+  }
+
+  <!-- ─── TAB: NOTICIAS ──────────────────────────────────────────────── -->
+  @if (tabActivo() === 'noticias') {
   <div class="noticias-table">
     <table>
       <thead>
@@ -55,7 +149,9 @@
       </tbody>
     </table>
   </div>
+  }
 </div>
+
 
 @if (showForm()) {
 <div

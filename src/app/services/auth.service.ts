@@ -16,14 +16,16 @@ interface AuthResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private apiConfig = inject(ApiConfig);
-  
+
   private baseUrl = `${this.apiConfig.baseUrl}/auth`;
-  
+
   private usuarioActual = signal<Usuario | null>(null);
   private token = signal<string | null>(null);
 
   isLoggedIn = computed(() => this.usuarioActual() !== null);
   isAdmin = computed(() => this.usuarioActual()?.rol === 'admin');
+  isModerador = computed(() => this.usuarioActual()?.rol === 'moderador');
+  isPowerUser = computed(() => ['admin', 'moderador'].includes(this.usuarioActual()?.rol ?? ''));
   usuario = computed(() => this.usuarioActual());
 
   constructor() {
@@ -88,13 +90,31 @@ export class AuthService {
     if (!this.token()) {
       return of(false);
     }
-    
+
     return this.http.get<Usuario>(`${this.baseUrl}/me`).pipe(
-      tap(usuario => this.usuarioActual.set(usuario)),
+      tap(usuario => {
+        this.usuarioActual.set(usuario);
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+      }),
       map(() => true),
       catchError(() => {
         this.logout();
         return of(false);
+      })
+    );
+  }
+
+  // Actualizar perfil del usuario
+  actualizarPerfil(nombre: string, avatar?: string): Observable<{ success: boolean; message: string }> {
+    return this.http.put<Usuario>(`${this.baseUrl}/me`, { nombre, avatar }).pipe(
+      tap(usuario => {
+        this.usuarioActual.set(usuario);
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+      }),
+      map(() => ({ success: true, message: 'Perfil actualizado' })),
+      catchError(error => {
+        const message = error.error?.detail || 'Error al actualizar perfil';
+        return of({ success: false, message });
       })
     );
   }

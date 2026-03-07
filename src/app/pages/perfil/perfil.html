@@ -1,0 +1,65 @@
+<div class="perfil-wrapper">
+    <div class="perfil-card">
+
+        <div class="perfil-header">
+            <a routerLink="/" class="back-link">← Volver</a>
+            <h1>Mi Perfil</h1>
+            <p>Actualiza tu información personal</p>
+        </div>
+
+        @if (mensaje()) {
+        <div class="mensaje" [class.success]="mensaje()?.tipo === 'success'"
+            [class.error]="mensaje()?.tipo === 'error'">
+            {{ mensaje()?.texto }}
+        </div>
+        }
+
+        <!-- Avatar Section -->
+        <div class="avatar-section">
+            <div class="avatar-container">
+                @if (avatarUrl()) {
+                <img [src]="getImageUrl(avatarUrl())" alt="Avatar" class="avatar-img" />
+                } @else {
+                <div class="avatar-placeholder">
+                    {{ authService.usuario()?.nombre?.charAt(0)?.toUpperCase() }}
+                </div>
+                }
+                <label class="avatar-edit-btn" [class.uploading]="uploadingAvatar()">
+                    <input type="file" accept="image/*" (change)="onAvatarSelected($event)" style="display:none"
+                        [disabled]="uploadingAvatar()" />
+                    @if (uploadingAvatar()) {
+                    <i class="bi bi-arrow-clockwise"></i>
+                    } @else {
+                    <i class="bi bi-camera"></i>
+                    }
+                </label>
+            </div>
+            <p class="avatar-hint">Haz clic en el icono para cambiar tu foto</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-section">
+            <div class="form-group">
+                <label>Nombre completo</label>
+                <input type="text" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" placeholder="Tu nombre" />
+            </div>
+
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" [value]="authService.usuario()?.email ?? ''" disabled class="disabled-input" />
+                <small>El email no se puede cambiar</small>
+            </div>
+
+            <div class="form-group">
+                <label>Rol</label>
+                <input type="text" [value]="authService.usuario()?.rol ?? ''" disabled
+                    class="disabled-input role-badge" />
+            </div>
+
+            <button class="btn-guardar" (click)="guardarCambios()" [disabled]="saving()">
+                {{ saving() ? 'Guardando...' : 'Guardar Cambios' }}
+            </button>
+        </div>
+
+    </div>
+</div>

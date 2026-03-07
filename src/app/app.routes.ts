@@ -1,14 +1,19 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { authGuard, loginGuard, moderadorGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./pages/home/home').then(m => m.Home)
+    loadComponent: () => import('./pages/landing/landing').then(m => m.Landing)
   },
+
   {
     path: 'noticias',
     loadComponent: () => import('./pages/home/home').then(m => m.Home)
+  },
+  {
+    path: 'eventos',
+    loadComponent: () => import('./pages/eventos/eventos').then(m => m.Eventos)
   },
   {
     path: 'contact',
@@ -17,6 +22,16 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./pages/perfil/perfil').then(m => m.Perfil),
+    canActivate: [loginGuard]
+  },
+  {
+    path: 'moderador',
+    loadComponent: () => import('./pages/moderador/moderador').then(m => m.Moderador),
+    canActivate: [moderadorGuard]
   },
   {
     path: 'admin',

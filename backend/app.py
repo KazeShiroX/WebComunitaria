@@ -5,6 +5,8 @@ from models import db
 from routes.auth_routes import auth_bp
 from routes.noticias_routes import noticias_bp
 from routes.upload_routes import upload_bp
+from routes.comentarios_routes import comentarios_bp
+from routes.eventos_routes import eventos_bp
 import os
 
 def create_app():
@@ -19,10 +21,10 @@ def create_app():
     db.init_app(app)
     
     # Configurar CORS para todos los /api/* routes
-    CORS(app, 
+    CORS(app,
          resources={r"/api/*": {
-             "origins": ["https://webcomunitariajjr.netlify.app", "http://localhost:4200"],
-             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "origins": ["https://webcomunitariajjr.netlify.app", "http://localhost:4200", "https://cavernous-assumption-fur.osk.dom.my.id"],
+             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
              "allow_headers": ["Content-Type", "Authorization"],
              "supports_credentials": True,
              "max_age": 3600
@@ -33,20 +35,27 @@ def create_app():
     @app.after_request
     def after_request_func(response):
         origin = request.headers.get('Origin')
-        allowed_origins = ["https://webcomunitariajjr.netlify.app", "http://localhost:4200"]
-        
+        allowed_origins = [
+            "https://webcomunitariajjr.netlify.app",
+            "http://localhost:4200",
+            "https://cavernous-assumption-fur.osk.dom.my.id"
+        ]
+
         if origin in allowed_origins:
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
-            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        
+
         return response
+
     
     # Registrar blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(noticias_bp, url_prefix='/api/noticias')
     app.register_blueprint(upload_bp, url_prefix='/api')
+    app.register_blueprint(comentarios_bp, url_prefix='/api')
+    app.register_blueprint(eventos_bp, url_prefix='/api/eventos')
     
     # Ruta para servir archivos subidos
     @app.route('/uploads/<filename>')

@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -55,7 +55,7 @@ export class Login {
       }).subscribe({
         next: (result) => {
           if (result.success) {
-            this.router.navigate(['/admin']);
+            this.router.navigate(['/']);
           } else {
             this.error.set(result.message);
           }

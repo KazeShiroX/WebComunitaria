@@ -1,0 +1,197 @@
+<div class="eventos-page">
+
+    <!-- ── HEADER ── -->
+    <div class="ev-header">
+        <div>
+            <h1><i class="bi bi-calendar-event"></i> Eventos</h1>
+            <p>Próximos eventos de la comunidad</p>
+        </div>
+        @if (authService.isPowerUser()) {
+        <button class="btn-nuevo" (click)="openForm()">
+            <i class="bi bi-plus-lg"></i> Nuevo Evento
+        </button>
+        }
+    </div>
+
+    @if (mensaje()) {
+    <div class="msg-banner" [class.success]="mensaje()?.tipo === 'success'" [class.error]="mensaje()?.tipo === 'error'">
+        {{ mensaje()?.texto }}
+    </div>
+    }
+
+    <div class="ev-layout">
+
+        <!-- ── COLUMNA IZQUIERDA: CALENDARIO ── -->
+        <aside class="calendar-panel">
+            <div class="cal-header">
+                <button class="cal-nav" (click)="cambiarMes(-1)"><i class="bi bi-chevron-left"></i></button>
+                <span class="cal-mes">{{ mesMostrado() }}</span>
+                <button class="cal-nav" (click)="cambiarMes(1)"><i class="bi bi-chevron-right"></i></button>
+            </div>
+
+            <div class="cal-grid-header">
+                @for (d of ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']; track d) {
+                <span>{{ d }}</span>
+                }
+            </div>
+
+            <div class="cal-grid">
+                @for (dia of diasCalendario(); track $index) {
+                <button class="cal-day" [class.vacio]="!dia" [class.hoy]="dia !== null && esHoy(dia)"
+                    [class.tiene-evento]="dia !== null && diasConEventos().has(dia)"
+                    [class.seleccionado]="dia !== null && diaSeleccionado() === dia" (click)="seleccionarDia(dia)"
+                    [disabled]="!dia">
+                    {{ dia || '' }}
+                    @if (dia && diasConEventos().has(dia)) {
+                    <span class="cal-dot"></span>
+                    }
+                </button>
+                }
+            </div>
+
+            @if (diaSeleccionado()) {
+            <button class="cal-clear" (click)="diaSeleccionado.set(null)">
+                <i class="bi bi-x"></i> Ver todos
+            </button>
+            }
+
+            <!-- Leyenda countdown -->
+            <div class="cal-legend">
+                <span class="legend-item"><span class="dot hoy"></span> Hoy</span>
+                <span class="legend-item"><span class="dot pronto"></span> Esta semana</span>
+                <span class="legend-item"><span class="dot futuro"></span> Próximo</span>
+                <span class="legend-item"><span class="dot pasado"></span> Pasado</span>
+            </div>
+        </aside>
+
+        <!-- ── COLUMNA DERECHA: TARJETAS ── -->
+        <div class="ev-content">
+
+            <!-- Filtro categorías -->
+            <div class="ev-cats">
+                @for (cat of categorias; track cat) {
+                <button class="cat-btn" [class.active]="catActiva() === cat" (click)="catActiva.set(cat)">
+                    {{ cat }}
+                </button>
+                }
+            </div>
+
+            @if (loading()) {
+            <p class="ev-empty">Cargando eventos...</p>
+            } @else if (eventosFiltrados().length === 0) {
+            <div class="ev-empty-box">
+                <i class="bi bi-calendar-x"></i>
+                <p>No hay eventos{{ catActiva() !== 'Todos' ? ' en esta categoría' : '' }}{{ diaSeleccionado() ? ' en
+                    este día' : '' }}.</p>
+            </div>
+            } @else {
+            <div class="ev-cards">
+                @for (ev of eventosFiltrados(); track ev.id) {
+                <article class="ev-card" [class.pasado]="ev.dias_restantes < 0">
+
+                    <!-- Countdown badge -->
+                    <div class="countdown-badge" [class]="countdownClass(ev.dias_restantes)">
+                        <i class="bi" [class.bi-clock-fill]="ev.dias_restantes > 0"
+                            [class.bi-star-fill]="ev.dias_restantes === 0"
+                            [class.bi-check-circle-fill]="ev.dias_restantes < 0">
+                        </i>
+                        {{ countdownLabel(ev.dias_restantes) }}
+                    </div>
+
+                    @if (ev.imagen) {
+                    <div class="ev-img-wrap">
+                        <img [src]="getImageUrl(ev.imagen)" [alt]="ev.titulo" />
+                    </div>
+                    }
+
+                    <div class="ev-card-body">
+                        <div class="ev-meta-top">
+                            <span class="ev-cat" [style.background-color]="getCatColor(ev.categoria)">{{ ev.categoria
+                                }}</span>
+                            <span class="ev-fecha"><i class="bi bi-calendar3"></i> {{ ev.fecha_evento | date:'dd MMM
+                                yyyy, HH:mm' }}</span>
+                        </div>
+                        <h3>{{ ev.titulo }}</h3>
+                        <p class="ev-desc">{{ ev.descripcion }}</p>
+                        @if (ev.lugar) {
+                        <div class="ev-lugar"><i class="bi bi-geo-alt"></i> {{ ev.lugar }}</div>
+                        }
+                        <div class="ev-footer">
+                            <span class="ev-autor"><i class="bi bi-person"></i> {{ ev.autor }}</span>
+                            @if (authService.isPowerUser()) {
+                            <div class="ev-actions">
+                                <button class="btn-ev-icon edit" (click)="openForm(ev)" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn-ev-icon del" (click)="eliminar(ev.id)" title="Eliminar">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </article>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL FORM ── -->
+@if (showForm()) {
+<div class="modal-overlay" (click)="closeForm()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+            <h2>{{ editingEvento() ? 'Editar Evento' : 'Nuevo Evento' }}</h2>
+            <button (click)="closeForm()"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <div class="form-group">
+            <label>Título *</label>
+            <input [ngModel]="fTitulo()" (ngModelChange)="fTitulo.set($event)" placeholder="Nombre del evento" />
+        </div>
+        <div class="form-group">
+            <label>Descripción *</label>
+            <textarea [ngModel]="fDescripcion()" (ngModelChange)="fDescripcion.set($event)" rows="3"
+                placeholder="¿De qué trata el evento?"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Categoría</label>
+                <select [ngModel]="fCategoria()" (ngModelChange)="fCategoria.set($event)">
+                    @for (cat of categorias; track cat) {
+                    @if (cat !== 'Todos') { <option [value]="cat">{{ cat }}</option> }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha y hora del evento *</label>
+                <input type="datetime-local" [ngModel]="fFechaEvento()" (ngModelChange)="fFechaEvento.set($event)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Lugar <span class="optional">(opcional)</span></label>
+            <input [ngModel]="fLugar()" (ngModelChange)="fLugar.set($event)" placeholder="Ej. Parque central" />
+        </div>
+        <div class="form-group">
+            <label>Imagen <span class="optional">(opcional)</span></label>
+            <label class="upload-label">
+                <i class="bi bi-upload"></i> {{ uploadingImg() ? 'Subiendo...' : 'Subir imagen' }}
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="uploadingImg()"
+                    style="display:none" />
+            </label>
+            @if (fImagen()) {
+            <img [src]="getImageUrl(fImagen())" alt="preview" class="img-preview" />
+            }
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-cancel" (click)="closeForm()">Cancelar</button>
+            <button class="btn-guardar" (click)="guardar()" [disabled]="guardando()">
+                {{ guardando() ? 'Guardando...' : (editingEvento() ? 'Actualizar' : 'Crear Evento') }}
+            </button>
+        </div>
+    </div>
+</div>
+}

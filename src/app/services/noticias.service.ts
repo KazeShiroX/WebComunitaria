@@ -13,7 +13,7 @@ export class NoticiasService {
 
   private baseUrl = `${this.apiConfig.baseUrl}/noticias`;
 
-  private categorias = signal<string[]>(['Todos', 'Noticias Locales', 'Deportes', 'Cultura', 'Comunidad']);
+  private categorias = signal<string[]>(['Todos', 'Noticias Locales', 'Deportes', 'Cultura', 'Comunidad', 'Brigadistas']);
   private noticiasCache = signal<Noticia[]>([]);
 
   getCategorias() {
