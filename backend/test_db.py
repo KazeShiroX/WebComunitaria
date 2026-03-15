@@ -8,7 +8,7 @@ host = os.getenv('DB_HOST', 'localhost')
 user = os.getenv('DB_USER', 'root')
 password = os.getenv('DB_PASSWORD', '')
 port = int(os.getenv('DB_PORT', 3306))
-dbname = os.getenv('DB_NAME', 'comunidad_bd')
+dbname = os.getenv('DB_NAME', 'webcomunitaria')
 
 print(f"Testing connection to {host} as {user}...")
 
@@ -21,11 +21,11 @@ try:
         port=port
     )
     print("Connection successful!")
-    
+
     with connection.cursor() as cursor:
         print(f"Creating database {dbname} if not exists...")
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
-    
+
     connection.commit()
     connection.close()
     print("Database preparation complete.")

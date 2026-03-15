@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { PaginacionResult, Noticia } from '../../models/noticia.model';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   private noticiasService = inject(NoticiasService);
   private comentariosService = inject(ComentariosService);
   private apiConfig = inject(ApiConfig);
@@ -37,6 +37,10 @@ export class Home implements OnInit {
   });
 
   loading = signal<boolean>(false);
+
+  // Tick para forzar actualización del tiempo relativo
+  tick = signal(0);
+  timer: any;
 
   // Modal de detalle
   showModal = signal<boolean>(false);
@@ -67,6 +71,11 @@ export class Home implements OnInit {
 
   ngOnInit() {
     this.cargarNoticias();
+    this.timer = setInterval(() => this.tick.update(v => v + 1), 60000);
+  }
+
+  ngOnDestroy() {
+    if (this.timer) clearInterval(this.timer);
   }
 
   getImageUrl(path: string | undefined): string {

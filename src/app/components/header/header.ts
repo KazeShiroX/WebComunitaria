@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NotificacionesService, Notificacion } from '../../services/notificaciones.service';
+import { ApiConfig } from '../../services/api-config.service';
 import { TiempoRelativoPipe } from '../../pipes/tiempo-relativo.pipe';
 
 @Component({
@@ -13,6 +14,7 @@ import { TiempoRelativoPipe } from '../../pipes/tiempo-relativo.pipe';
 export class Header implements OnInit {
   authService = inject(AuthService);
   notifService = inject(NotificacionesService);
+  apiConfig = inject(ApiConfig);
   mobileMenuOpen = signal(false);
   notifOpen = signal(false);
 
@@ -21,7 +23,10 @@ export class Header implements OnInit {
     return usuario?.nombre ? usuario.nombre.charAt(0).toUpperCase() : '';
   });
 
-  userAvatar = computed(() => this.authService.usuario()?.avatar ?? '');
+  userAvatar = computed(() => {
+    const avatar = this.authService.usuario()?.avatar;
+    return avatar ? this.apiConfig.getImageUrl(avatar) : '';
+  });
 
   ngOnInit() {
     // Cargar notificaciones si está logueado

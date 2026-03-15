@@ -45,7 +45,7 @@ export class NoticiasService {
       map(response => {
         const noticiasApi = response.items.map((item: any) => ({
           ...item,
-          fecha: new Date(item.fecha),
+          fecha: new Date(item.fecha.endsWith('Z') || item.fecha.includes('+') ? item.fecha : item.fecha + 'Z'),
           autor: item.autor_nombre
         }));
 
@@ -80,7 +80,7 @@ export class NoticiasService {
     return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
       map(item => ({
         ...item,
-        fecha: new Date(item.fecha),
+        fecha: new Date(item.fecha.endsWith('Z') || item.fecha.includes('+') ? item.fecha : item.fecha + 'Z'),
         autor: item.autor_nombre
       })),
       catchError(() => of(undefined))
@@ -97,7 +97,7 @@ export class NoticiasService {
     }).pipe(
       map(item => ({
         ...item,
-        fecha: new Date(item.fecha),
+        fecha: new Date(item.fecha.endsWith('Z') || item.fecha.includes('+') ? item.fecha : item.fecha + 'Z'),
         autor: item.autor_nombre
       }))
     );
@@ -113,7 +113,7 @@ export class NoticiasService {
     }).pipe(
       map(item => ({
         ...item,
-        fecha: new Date(item.fecha),
+        fecha: new Date(item.fecha.endsWith('Z') || item.fecha.includes('+') ? item.fecha : item.fecha + 'Z'),
         autor: item.autor_nombre
       }))
     );
@@ -131,7 +131,7 @@ export class NoticiasService {
     return this.http.get<any>(this.baseUrl, { params }).pipe(
       map(response => response.items.map((item: any) => ({
         ...item,
-        fecha: new Date(item.fecha),
+        fecha: new Date(item.fecha.endsWith('Z') || item.fecha.includes('+') ? item.fecha : item.fecha + 'Z'),
         autor: item.autor_nombre
       }))),
       catchError(() => of([]))

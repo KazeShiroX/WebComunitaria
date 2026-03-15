@@ -44,7 +44,8 @@
                     <p>{{ noticia.descripcion }}</p>
                     <div class="card-meta">
                         <span><i class="bi bi-person"></i> {{ noticia.autor }}</span>
-                        <span><i class="bi bi-clock"></i> {{ noticia.fecha | tiempoRelativo }}</span>
+                        <span><i class="bi bi-clock"></i> {{ (tick() === 0 ? noticia.fecha : noticia.fecha) |
+                            tiempoRelativo }}</span>
                     </div>
                 </div>
             </article>
@@ -71,8 +72,8 @@
                         {{ noticia.categoria }}
                     </span>
                     <h4>{{ noticia.titulo }}</h4>
-                    <span class="reciente-tiempo"><i class="bi bi-clock"></i> {{ noticia.fecha | tiempoRelativo
-                        }}</span>
+                    <span class="reciente-tiempo"><i class="bi bi-clock"></i> {{ (tick() === 0 ? noticia.fecha :
+                        noticia.fecha) | tiempoRelativo }}</span>
                 </div>
                 <i class="bi bi-chevron-right reciente-arrow"></i>
             </article>

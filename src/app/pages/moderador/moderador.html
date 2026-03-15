@@ -84,7 +84,7 @@
                         @if (c.noticia_titulo) {
                         <span class="comentario-noticia">en "{{ c.noticia_titulo }}"</span>
                         }
-                        <span class="comentario-fecha">{{ c.fecha | date:'dd/MM/yy HH:mm' }}</span>
+                        <span class="comentario-fecha">{{ (tick() === 0 ? c.fecha : c.fecha) | tiempoRelativo }}</span>
                     </div>
                     <p class="comentario-texto">{{ c.texto }}</p>
                 </div>
