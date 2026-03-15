@@ -9,7 +9,7 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
       <a routerLink="/noticias" routerLinkActive="active">Noticias</a>
       <a routerLink="/eventos" routerLinkActive="active">Eventos</a>
-      <a href="#">Servicios</a>
+      <a routerLink="/servicios" routerLinkActive="active">Servicios</a>
       <a routerLink="/contact" routerLinkActive="active">Contacto</a>
     </nav>
 
@@ -97,8 +97,8 @@
   <div class="mobile-menu" (click)="mobileMenuOpen.set(false)">
     <a routerLink="/">Inicio</a>
     <a routerLink="/noticias">Noticias</a>
-    <a href="#">Eventos</a>
-    <a href="#">Servicios</a>
+    <a routerLink="/eventos">Eventos</a>
+    <a routerLink="/servicios">Servicios</a>
     <a routerLink="/contact">Contacto</a>
     @if (authService.isLoggedIn()) {
     <a routerLink="/perfil">Mi Perfil</a>

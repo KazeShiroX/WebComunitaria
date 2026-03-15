@@ -1,0 +1,37 @@
+<div class="servicios-wrapper">
+  <div class="dreamy-background"></div>
+
+  <div class="servicios-container">
+    <section class="hero">
+      <h1>Servicios de emergencia y públicos</h1>
+      <p>Números de bomberos, policía, salud, agua, luz y más — Juan José Ríos.</p>
+    </section>
+
+    <div class="servicios-grid">
+      @for (categoria of categorias; track categoria.nombre) {
+        <section class="servicios-section">
+          <h2>{{ categoria.nombre }}</h2>
+          <div class="cards-list">
+            @for (item of categoria.items; track item.nombre) {
+              <div class="servicio-card">
+                <div class="avatar-placeholder">{{ item.nombre.charAt(0) }}</div>
+                <h3>{{ item.nombre }}</h3>
+                <p class="servicio-tipo">{{ item.tipo }}</p>
+                @if (item.telefonos?.length) {
+                  <p class="servicio-detail">
+                    <i class="bi bi-telephone"></i> {{ item.telefonos.join(', ') }}
+                  </p>
+                }
+                @if (item.direccion) {
+                  <p class="servicio-detail">
+                    <i class="bi bi-geo-alt"></i> {{ item.direccion }}
+                  </p>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+</div>
